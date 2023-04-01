@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,197 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+button {
+  display: inline-block;
+  background-color: #7b38d8; /* a fancy background color for the button */
+  padding: 20px; /* makes a bit more room for our button in all four sides */
+  width: 200px; /* gives a 200px width */
+  color: #ffffff; /* makes our text white */
+  text-align: center; /* puts our text in the center */
+  border: 4px double #cccccc; /* adds a double border */
+  border-radius: 10px; /* rounds the corners */
+  font-size: 28px; /* makes the text bigger */
+  cursor: pointer; /* changes the cursor to a hand icon */
+  margin: 5px; /* adds some space around the button */
+  transition-duration: 0.4s; /* adds a transition effect when hovered */
 }
+
+button:hover {
+  background-color: green; /* changes the background color when hovered */
+}
+
+
+:root {
+  --primary-color: #ff6f61;
+  --secondary-color: #f7f7f7;
+  --dark-color: #1a1a1a;
+  --light-color: #ffffff;
+  --font-family: "Roboto", sans-serif;
+}
+
+/* Reset some default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Style the body element */
+body {
+  font-family: var(--font-family);
+  background-color: var(--dark-color);
+  color: var(--light-color);
+}
+
+/* Style the header element */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+/* Style the logo element */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+/* Style the navigation element */
+.nav {
+  display: flex;
+  list-style: none;
+}
+
+/* Style the navigation links */
+.nav li {
+  margin-left: 20px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--light-color);
+}
+
+.nav a:hover {
+  color: var(--primary-color);
+}
+
+/* Style the main element */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Style the introduction section */
+.intro {
+  text-align: center;
+}
+
+.intro h1 {
+  font-size: 48px;
+}
+
+.intro p {
+  font-size: 18px;
+}
+
+.intro img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+/* Style the skills section */
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.skills h2 {
+  font-size: 36px;
+  margin: 20px;
+}
+
+.skills ul {
+  display: flex;
+  list-style: none;
+}
+
+.skills li {
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid var(--primary-color);
+  border-radius: 10px;
+}
+
+/* Style the projects section */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+}
+
+.projects h2 {
+  font-size: 36px;
+  margin: 20px;
+}
+
+.projects img {
+  width: 100%;
+  height: auto;
+}
+
+.projects p {
+  font-size: 18px;
+}
+
+/* Style the testimonials section */
+.testimonials {
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonials h2 {
+  font-size: 36px;
+  margin: 20px;
+}
+
+.testimonials blockquote {
+  margin: 20px;
+  padding: 20px;
+  background-color: var(--secondary-color);
+}
+
+.testimonials blockquote p {
+  font-size: 18px;
+}
+
+.testimonials .testimonial { display: flex; align-items: center; margin: 20px; }
+
+.testimonials .testimonial img { width: 100px; height: 100px; border-radius: 50%; }
+
+.testimonials .testimonial p { font-size: 18px; margin-left: 20px; }
+
+.testimonials .testimonial:hover { transform: translateY(-10px); transition: all .3s ease-in-out; }
+
+@keyframes slideIn { from { opacity:0; transform: translateX(-100%); } to { opacity:1; transform: translateX(0%); } }
+
+.testimonials .testimonial:nth-child(odd) { animation-name: slideIn; animation-duration: .5s; animation-delay:.5s; animation-fill-mode:both; }
+
+@keyframes slideInRight { from { opacity:0; transform: translateX(100%); } to { opacity:1; transform: translateX(0%); } }
+
+.testimonials .testimonial:nth-child(even) { animation-name: slideInRight; animation-duration:.5s; animation-delay:.5s; animation-fill-mode:both; }
+
+/* Style the footer element */ 
+footer { display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+footer p { font-size: 18px; }
+
+footer a { text-decoration: none; color: var(–primary-color); }
+
+footer a:hover { text-decoration: underline; }
