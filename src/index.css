@@ -11,3 +11,110 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* override the primary color classes */
+:root {
+  --bs-background: #946747;
+  --bs-primary: #BCA37F;
+  --bs-secondary: #EAD7BB;
+  --bs-tertiary: #FFF2D8;
+  --bs-accent: #113946;
+}
+
+.navbar-nav li a {
+  color: var(--bs-tertiary) !important;
+}
+
+.btn-light {
+  --bs-btn-color: var(--bs-accent);
+  --bs-btn-bg: var(--bs-tertiary);
+  --bs-btn-border-color: var(--bs-tertiary);
+  --bs-btn-hover-color: var(--bs-accent);
+  --bs-btn-hover-bg: var(--bs-primary);
+  --bs-btn-hover-border-color: var(--bs-primary);
+  --bs-btn-focus-shadow-rgb: 211,212,213;
+  --bs-btn-active-color: var(--bs-accent);
+  --bs-btn-active-bg: var(--bs-primary);
+  --bs-btn-active-border-color: var(--bs-primary);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--bs-accent);
+  --bs-btn-disabled-bg: var(--bs-tertiary);
+  --bs-btn-disabled-border-color: var(--bs-tertiary);
+}
+
+.text-tertiary{
+  --bs-text-opacity: 1;
+  color: var(--bs-tertiary) !important;
+}
+
+.bg-background {
+  background-color: var(--bs-background) !important;
+}
+.btn-background {
+  color: #fff;
+  background-color: var(--bs-background);
+  border-color: var(--bs-background);
+}
+.btn-background:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+.bg-accent {
+  background-color: var(--bs-accent) !important;
+}
+.btn-accent {
+  color: #fff;
+  background-color: var(--bs-accent);
+  border-color: var(--bs-accent);
+}
+.btn-accent:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+.btn-primary {
+  color: #fff;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+
+.bg-secondary {
+  background-color: var(--bs-secondary) !important;
+}
+.btn-secondary {
+  color: #fff;
+  background-color: var(--bs-secondary);
+  border-color: var(--bs-secondary);
+}
+.btn-secondary:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+.bg-tertiary {
+  background-color: var(--bs-tertiary) !important;
+}
+.btn-tertiary {
+  color: #fff;
+  background-color: var(--bs-tertiary);
+  border-color: var(--bs-tertiary);
+}
+.btn-tertiary:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}

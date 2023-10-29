@@ -9,7 +9,8 @@ import Testimonials from './Testimonials';
 import Contact from './Contact';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import picture from './pictures/DishonoredGods_Link_from_Zelda_fighting_blood_war_8k_realistic._b8790919-6827-4498-8a24-f5e8131d0c13.png';
+import './index.css';
+import picture from './pictures/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
 
 const LandingPageContainer = () => (
   <div className="LandingPage-container" style={{backgroundImage: `url(${picture})`}}>
@@ -18,7 +19,7 @@ const LandingPageContainer = () => (
 );
 
 const DefaultContainer = () => (
-  <div>
+  <div style={{backgroundImage: `url(${picture})`}}>
     <Navbar />
       <Routes>
         <Route exact path="/Home" element={<Home />} />

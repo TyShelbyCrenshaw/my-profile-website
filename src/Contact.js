@@ -40,7 +40,7 @@
 
 const ContactPage = () => {
   return ( 
-      <div class="container" style={{marginTop: "250px"}}>
+      <div className="container" style={{marginTop: "250px"}}>
           <h1 style={{letterSpacing: "0.4em"}}>
               Contact Me
           </h1>
