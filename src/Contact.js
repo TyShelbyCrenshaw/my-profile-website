@@ -40,20 +40,17 @@
 
 const ContactPage = () => {
   return ( 
-      <div className="container" style={{marginTop: "250px"}}>
-          <h1 style={{letterSpacing: "0.4em"}}>
-              Contact Me
-          </h1>
-          <br />
-          <br />
-          <div>Email: </div>
-          <div>linxtree@gmail.com</div>
-          <br />
-          <div>linkedin: </div>
-          <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/">Ty Crenshaw</a>
-          <br />
+        <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+            <div className='mt-5 p-3 bg-tertiary shadow'> 
+                <div className='bg-secondary m-3 p-5 shadow'>
+                    <h1>
+                        Contact Me
+                    </h1>
+                    <div className="mt-5">Email: linxtree@gmail.com</div>
+                    <div className="mt-3">linkedin: <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/">Ty Crenshaw</a></div>
+                </div>
+            </div>
       </div>
-
    );
 }
 

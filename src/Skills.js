@@ -3,18 +3,18 @@ const Skills = () => {
     <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
         <h1 className="text-accent">Skills</h1>
 
-        <div className="mt-5 card w-75">
+        <div className="mt-5 card w-75 shadow">
             <div className="card-header bg-primary text-tertiary">
             What are the main programming languages, tools, and frameworks that you use in your work?
             </div>
-            <div className="card-body bg-tertiary">
+            <div className="card-body card- bg-tertiary">
                 <blockquote className="blockquote mb-0">
                 <p>I am a .NET developer who uses C# as my primary programming language. I use the MVC pattern to create web applications that separate the presentation, business logic, and data access layers. I use SQL Server Management Studio (SSMS) as my database management tool, and SQL as my query language to interact with the data stored in the back end of my applications.</p>
                 </blockquote>
             </div>
         </div>
 
-        <div className="mt-5 card w-75">
+        <div className="mt-5 card w-75 shadow">
             <div className="card-header bg-primary text-tertiary">
             What are the main types of software applications or systems that you develop or maintain?
             </div>
@@ -25,7 +25,7 @@ const Skills = () => {
             </div>
         </div>
 
-        <div className="mt-5 card w-75">
+        <div className="mt-5 card w-75 shadow">
             <div className="card-header bg-primary text-tertiary">
             How do you collaborate with other developers, designers, testers, or stakeholders in your projects? What are the tools or methods that you use for communication and coordination?
             </div>
@@ -36,7 +36,7 @@ const Skills = () => {
             </div>
         </div>
 
-        <div className="mt-5 card w-75">
+        <div className="mt-5 card w-75 shadow">
             <div className="card-header bg-primary text-tertiary">
             What are some of the most challenging or interesting projects that you have worked on or contributed to? What were the goals, challenges, solutions, and outcomes of those projects?
             </div>
@@ -47,7 +47,7 @@ const Skills = () => {
             </div>
         </div>
 
-        <div className="mt-5 card w-75">
+        <div className="mt-5 card w-75 shadow">
             <div className="card-header bg-primary text-tertiary">
             How do you keep your skills and knowledge up to date? What are some of the sources or resources that you use for learning new technologies or best practices?
             </div>

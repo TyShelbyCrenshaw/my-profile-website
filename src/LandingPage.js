@@ -2,8 +2,8 @@
 const LandingPage = () => {
     return ( 
         <div className="container" style={{paddingTop: "135px", width: "100vw", height: "100vh"}}>
-            <div className="p-5 bg-secondary"> 
-                <div className="p-5 bg-background" style={{color:"#FFF2D8"}}>
+            <div className="p-5 bg-secondary shadow"> 
+                <div className="p-5 bg-background shadow" style={{color:"#FFF2D8"}}>
                     <h1 className="text-tertiary display-1  fw-bold" style={{ letterSpacing: "0.4em", color:"#FFF2D8"}}>
                         Ty Crenshaw
                     </h1>

@@ -14,7 +14,7 @@ code {
 
 /* override the primary color classes */
 :root {
-  --bs-background: #946747;
+  --bs-background: #806743;
   --bs-primary: #BCA37F;
   --bs-secondary: #EAD7BB;
   --bs-tertiary: #FFF2D8;
@@ -45,6 +45,11 @@ code {
 .text-tertiary{
   --bs-text-opacity: 1;
   color: var(--bs-tertiary) !important;
+}
+
+.text-accent{
+  --bs-text-opacity: 1;
+  color: var(--bs-accent) !important;
 }
 
 .bg-background {
