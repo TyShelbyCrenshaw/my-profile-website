@@ -1,7 +1,7 @@
 
 const LandingPage = () => {
     return ( 
-        <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+        <div className="container pt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
             <div className="p-5 bg-secondary shadow"> 
                 <div className="p-5 bg-background shadow" style={{color:"#FFF2D8"}}>
                     <h1 className="text-tertiary display-1  fw-bold" style={{ letterSpacing: "0.4em", color:"#FFF2D8"}}>
