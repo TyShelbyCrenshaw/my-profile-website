@@ -1,3 +1,4 @@
+import picture from './pictures/atSymbol.png';
 //this is be tring to get a form they could fill out and it would
 //send me an email. I still think this would be neet but it is a lot of work
 //meaning idk how to do it and it was taking alot of time.
@@ -46,7 +47,9 @@ const ContactPage = () => {
                     <h1>
                         Contact Me
                     </h1>
-                    <div className="mt-5">Email: linxtree@gmail.com</div>
+                    <div className="mt-5">Email: linxtree
+                    <img src={picture}/>
+                    gmail.com</div>
                     <div className="mt-3">linkedin: <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/">Ty Crenshaw</a></div>
                 </div>
             </div>
