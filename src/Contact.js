@@ -48,7 +48,7 @@ const ContactPage = () => {
                         Contact Me
                     </h1>
                     <div className="mt-5">Email: linxtree
-                    <img src={picture}/>
+                    <img src={picture} style={{height: "13px"}}/>
                     gmail.com</div>
                     <div className="mt-3">linkedin: <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/">Ty Crenshaw</a></div>
                 </div>
