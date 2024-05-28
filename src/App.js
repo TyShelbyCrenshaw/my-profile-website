@@ -5,12 +5,14 @@ import Home from './Home';
 import LandingPage from './LandingPage';
 import Skills from './Skills';
 import Projects from './Projects';
+import WorkProjects from './WorkProjects';
+import SchoolProjects from './SchoolProjects';
 import Testimonials from './Testimonials';
 import Contact from './Contact';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import './index.css';
-import picture from './pictures/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
+import picture from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
 
 const LandingPageContainer = () => (
   <div className="LandingPage-container" style={{backgroundImage: `url(${picture})`}}>
@@ -27,6 +29,8 @@ const DefaultContainer = () => (
         <Route exact path="/Projects" element={<Projects />} />
         <Route exact path="/Testimonials" element={<Testimonials />} />
         <Route exact path="/Contact" element={<Contact />} />
+        <Route exact path="/WorkProjects" element={<WorkProjects />} />
+        <Route exact path="/SchoolProjects" element={<SchoolProjects />} />
       </Routes>
   </div>
 );

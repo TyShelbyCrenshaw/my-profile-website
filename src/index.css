@@ -123,3 +123,13 @@ code {
   background-color: #2a22b8;
   border-color: #2520a6;
 }
+.moodboard {
+  border: 10px solid;
+  border-radius: 25px;
+  padding: 20px;
+  margin: auto;
+}
+
+.photo {
+  border: 5px solid white;
+}

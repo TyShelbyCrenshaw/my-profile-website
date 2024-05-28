@@ -1,5 +1,5 @@
-import backgroundImage from './pictures/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
-import picture from './pictures/FaceShot2.png';
+import backgroundImage from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
+import picture from './pictures/porfolio_photos/FaceShot2.png';
 const Home = () => {
     return (
     <div className="container mt-5" style={{width: "100vw", height: "100vh"}}>

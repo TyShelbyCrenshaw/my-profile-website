@@ -1,4 +1,4 @@
-import picture from './pictures/atSymbol.png';
+import picture from './pictures/porfolio_photos/atSymbol.png';
 //this is be tring to get a form they could fill out and it would
 //send me an email. I still think this would be neet but it is a lot of work
 //meaning idk how to do it and it was taking alot of time.
