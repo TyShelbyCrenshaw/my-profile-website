@@ -9,6 +9,7 @@ import WorkProjects from './WorkProjects';
 import SchoolProjects from './SchoolProjects';
 import Testimonials from './Testimonials';
 import Contact from './Contact';
+import AnimatedBackground from './components/AnimatedBackground.js';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import './index.css';
@@ -16,6 +17,7 @@ import picture from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless
 
 const LandingPageContainer = () => (
   <div className="LandingPage-container" style={{backgroundImage: `url(${picture})`}}>
+    <AnimatedBackground />
     <LandingPage />
   </div>
 );

@@ -1,0 +1,1045 @@
+Project Folder Structure:
+
+.git/ (ignored)
+.gitignore/ (ignored)
+.vscode/
+  launch.json
+build/ (ignored)
+compileProject.js
+node_modules/ (ignored)
+package-lock.json/ (ignored)
+package.json/ (ignored)
+public/
+  favicon.ico
+  index.html
+  logo192.png
+  logo512.png
+  manifest.json
+  robots.txt
+  TyTyPottery.jpg
+  TyTyPotteryIcon.png
+README.md
+src/
+  App.css
+  App.js
+  Contact.js
+  emails/
+    index.js
+  Home.js
+  index.css
+  index.js
+  LandingPage.js
+  Navbar.js
+  pictures/
+    class_photos/
+      buildings.jpg
+      church.jpg
+      dots.jpg
+      feiza.jpg
+      flower.jpg
+      gardenTurtles.jpg
+      IceMan.jpg
+      jazz.jpg
+      lyfe.jpg
+      moutain.jpg
+      mushroom.jpg
+      myPortrait.jpg
+      Nacho.jpg
+      onTheTown.jpg
+      sirNoodle.jpg
+      skull.jpg
+      skullZ.jpg
+      skullz2.jpg
+      skullz3.jpg
+      sub.jpg
+      theCloudyMountains.jpg
+      thePower.jpg
+      tower.jpg
+      transform.jpg
+      tree.jpg
+      unitedArtists.jpg
+      unity.jpg
+      wild.jpg
+    porfolio_photos/
+      atSymbol.png
+      background2.jpg
+      BOTICCINO.jpg
+      coupleStaring.jpg
+      coupleWalking1.jpg
+      DishonoredGods_Link_from_Zelda_fighting_blood_war_8k_realistic._b8790919-6827-4498-8a24-f5e8131d0c13.png
+      FaceShot1.png
+      FaceShot2.png
+      Faceshot3.png
+      familyPictures.jpg
+      imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg
+      LinkTrustExample.png
+      LinkTrustExample2.png
+      walking.png
+  Projects.js
+  SchoolProjects.js
+  Skills.js
+  Testimonials.js
+  WorkProjects.js
+
+
+---
+
+Project Files Content:
+
+
+
+---
+
+File: .vscode\launch.json
+
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
+
+---
+
+File: compileProject.js
+
+const fs = require('fs');
+const path = require('path');
+
+const projectDir = 'C:\\Users\\Ty\\source\\repos\\Personal-Profile\\my-profile-website';
+const outputFile = 'project_summary.txt';
+
+// Configuration
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB limit
+const RELEVANT_EXTENSIONS = [
+  '.js', '.jsx', '.ts', '.tsx',  // JavaScript/TypeScript files
+  '.html', '.css', '.scss',      // Web files
+  '.json', '.md',                // Config and documentation
+  '.txt'                         // Text files
+];
+
+const SKIP_FILES = [
+  'node_modules',
+  '.git',
+  '.gitignore',
+  'package-lock.json',
+  'package.json',
+  'project_summary.txt',
+  '.map',  // Skip source map files
+  'main.30bebfa5.css', // Skip the specific CSS file
+];
+
+const SKIP_DIRECTORIES = [
+  'build',  // Skip the entire build directory
+  'node_modules',
+  '.git'
+];
+
+const SKIP_CONTENTS_EXTENSIONS = [
+  '.jpg', '.jpeg', '.png', '.gif', '.ico', '.svg',  // Images
+  '.map',  // Source maps
+  '.ttf', '.woff', '.woff2', '.eot'  // Fonts
+];
+
+const getAllFiles = (dirPath, arrayOfFiles) => {
+  const files = fs.readdirSync(dirPath);
+  arrayOfFiles = arrayOfFiles || [];
+
+  // Skip entire directories
+  const dirName = path.basename(dirPath);
+  if (SKIP_DIRECTORIES.includes(dirName)) {
+    return arrayOfFiles;
+  }
+
+  files.forEach((file) => {
+    if (SKIP_FILES.some(skip => file.includes(skip))) {
+      return;
+    }
+    
+    const fullPath = path.join(dirPath, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
+    } else {
+      const ext = path.extname(file).toLowerCase();
+      if (RELEVANT_EXTENSIONS.includes(ext)) {
+        arrayOfFiles.push(fullPath);
+      }
+    }
+  });
+
+  return arrayOfFiles;
+};
+
+const getFilePreview = (filePath) => {
+  const stats = fs.statSync(filePath);
+  const extension = path.extname(filePath).toLowerCase();
+  
+  // Skip binary files and source maps
+  if (SKIP_CONTENTS_EXTENSIONS.includes(extension)) {
+    return `[${extension.substring(1)} file]`;
+  }
+
+  // Check file size
+  if (stats.size > MAX_FILE_SIZE) {
+    return `[File too large: ${(stats.size / (1024 * 1024)).toFixed(2)}MB]`;
+  }
+
+  try {
+    return fs.readFileSync(filePath, 'utf-8');
+  } catch (error) {
+    return `[Error reading file: ${error.message}]`;
+  }
+};
+
+const compileProjectFiles = (dirPath, outputFile) => {
+  const files = getAllFiles(dirPath);
+  let content = 'Project Folder Structure:\n\n';
+
+  // Add folder structure
+  const addFolderStructure = (dirPath, indent = '') => {
+    const files = fs.readdirSync(dirPath);
+    files.forEach((file) => {
+      // Skip directories in folder structure
+      if (SKIP_DIRECTORIES.includes(file)) {
+        content += `${indent}${file}/ (ignored)\n`;
+        return;
+      }
+      if (SKIP_FILES.some(skip => file.includes(skip))) {
+        content += `${indent}${file}/ (ignored)\n`;
+        return;
+      }
+      const filePath = path.join(dirPath, file);
+      if (fs.statSync(filePath).isDirectory()) {
+        content += `${indent}${file}/\n`;
+        addFolderStructure(filePath, indent + '  ');
+      } else {
+        content += `${indent}${file}\n`;
+      }
+    });
+  };
+
+  addFolderStructure(dirPath);
+  content += '\n\n---\n\nProject Files Content:\n\n';
+
+  // Add file contents
+  files.forEach((file) => {
+    const relativePath = path.relative(dirPath, file);
+    content += `\n\n---\n\nFile: ${relativePath}\n\n`;
+    content += getFilePreview(file);
+  });
+
+  fs.writeFileSync(outputFile, content, 'utf-8');
+  console.log(`Project files compiled into ${outputFile}`);
+};
+
+compileProjectFiles(projectDir, outputFile);
+
+---
+
+File: public\index.html
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <link rel="icon" href="%PUBLIC_URL%/favicon.ico" /> -->
+    <link rel="icon" href="%PUBLIC_URL%/TyTyPottery.jpg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Ty Ty Pottery</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
+
+
+---
+
+File: public\manifest.json
+
+{
+  "short_name": "React App",
+  "name": "Create React App Sample",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
+
+
+---
+
+File: public\robots.txt
+
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow:
+
+
+---
+
+File: README.md
+
+# Getting Started with Create React App
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+---
+
+File: src\App.css
+
+
+
+---
+
+File: src\App.js
+
+import './App.css';
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import Navbar from './Navbar';
+import Home from './Home';
+import LandingPage from './LandingPage';
+import Skills from './Skills';
+import Projects from './Projects';
+import WorkProjects from './WorkProjects';
+import SchoolProjects from './SchoolProjects';
+import Testimonials from './Testimonials';
+import Contact from './Contact';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import './index.css';
+import picture from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
+
+const LandingPageContainer = () => (
+  <div className="LandingPage-container" style={{backgroundImage: `url(${picture})`}}>
+    <LandingPage />
+  </div>
+);
+
+const DefaultContainer = () => (
+  <div style={{backgroundImage: `url(${picture})`}}>
+    <Navbar />
+      <Routes>
+        <Route exact path="/Home" element={<Home />} />
+        <Route exact path="/Skills" element={<Skills />} />
+        <Route exact path="/Projects" element={<Projects />} />
+        <Route exact path="/Testimonials" element={<Testimonials />} />
+        <Route exact path="/Contact" element={<Contact />} />
+        <Route exact path="/WorkProjects" element={<WorkProjects />} />
+        <Route exact path="/SchoolProjects" element={<SchoolProjects />} />
+      </Routes>
+  </div>
+);
+
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/LandingPage" element={<LandingPageContainer />} />
+        <Route exact path="/" element={<LandingPageContainer />} />
+        <Route path="*" element={<DefaultContainer />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+
+---
+
+File: src\Contact.js
+
+import picture from './pictures/porfolio_photos/atSymbol.png';
+//this is be tring to get a form they could fill out and it would
+//send me an email. I still think this would be neet but it is a lot of work
+//meaning idk how to do it and it was taking alot of time.
+// import { render } from '@react-email/render';
+// import AWS from 'aws-sdk';
+
+// AWS.config.update({ region: process.env.AWS_SES_REGION });
+
+// const emailHtml = render();
+
+// const options = {
+//   RawMessage: {
+//     Data: Buffer.from(
+//       `From: ${process.env.SOURCE_EMAIL}\r\n` +
+//         `To: ${process.env.DESTINATION_EMAIL}\r\n` +
+//         'Subject: hello world\r\n' +
+//         'MIME-Version: 1.0\r\n' +
+//         'Content-Type: multipart/mixed; boundary="NextPart"\r\n' +
+//         '\r\n' +
+//         '--NextPart\r\n' +
+//         'Content-Type: text/html; charset=us-ascii\r\n' +
+//         '\r\n' +
+//         `${emailHtml}\r\n` +
+//         '--NextPart--'
+//     ),
+//   },
+// };
+
+// const sendPromise = new AWS.SES({ apiVersion: '2010-12-01' })
+//   .sendRawEmail(options)
+//   .promise();
+
+// sendPromise
+//   .then((data) => {
+//     console.log(data.MessageId);
+//   })
+//   .catch((err) => {
+//     console.error(err, err.stack);
+//   });
+
+const ContactPage = () => {
+  return ( 
+        <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+            <div className='mt-5 p-3 bg-tertiary shadow'> 
+                <div className='bg-secondary m-3 p-5 shadow'>
+                    <h1>
+                        Contact Me
+                    </h1>
+                    <div className="mt-5">Email: linxtree
+                    <img src={picture} style={{height: "13px"}}/>
+                    gmail.com</div>
+                    <div className="mt-3">linkedin: <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/">Ty Crenshaw</a></div>
+                </div>
+            </div>
+      </div>
+   );
+}
+
+export default ContactPage;
+
+---
+
+File: src\emails\index.js
+
+import * as React from 'react';
+import { Html } from '@react-email/html';
+import { Button } from '@react-email/button';
+
+export function Email(props) {
+  const { url } = props;
+
+  return (
+    <Html lang="en">
+      <Button href={url}>Click me</Button>
+    </Html>
+  );
+}
+
+---
+
+File: src\Home.js
+
+import backgroundImage from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
+import picture from './pictures/porfolio_photos/FaceShot2.png';
+const Home = () => {
+    return (
+    <div className="container mt-5" style={{width: "100vw", height: "100vh"}}>
+        <div className='p-3 bg-tertiary shadow'> 
+            <div className='bg-secondary m-3 p-5 shadow'>
+                <div className="home container"> 
+                <div className="row">
+                <div className="col">
+                        <img src={picture} />
+                    </div>
+                    <div className="col">
+                        <h2>Ty Crenshaw</h2>
+                        <p className='mt-5'>
+                            My name is Ty Crenshaw and I am a 33-year-old software developer at Link Trust, a company that provides online marketing solutions. I have been working there for over three years, using the .NET Framework with an MVC front end and a MySQL database. I enjoy learning new things and keeping up with the latest technologies, especially in the field of artificial intelligence. In my spare time, I like to play video games with my wife, mainly Overwatch, and Beyond All Reason, we also like to take walks. I also have some hobbies like hiking and climbing, but I don’t do them as often as I used to. My goals are to improve my skills and knowledge as a developer, and to find new opportunities and challenges that can help me grow professionally and personally.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+ 
+
+        </div>
+    </div>
+ );
+}
+
+export default Home;
+
+---
+
+File: src\index.css
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* override the primary color classes */
+:root {
+  --bs-background: #806743;
+  --bs-primary: #BCA37F;
+  --bs-secondary: #EAD7BB;
+  --bs-tertiary: #FFF2D8;
+  --bs-accent: #113946;
+}
+
+.navbar-nav li a {
+  color: var(--bs-tertiary) !important;
+}
+
+.btn-light {
+  --bs-btn-color: var(--bs-accent);
+  --bs-btn-bg: var(--bs-tertiary);
+  --bs-btn-border-color: var(--bs-tertiary);
+  --bs-btn-hover-color: var(--bs-accent);
+  --bs-btn-hover-bg: var(--bs-primary);
+  --bs-btn-hover-border-color: var(--bs-primary);
+  --bs-btn-focus-shadow-rgb: 211,212,213;
+  --bs-btn-active-color: var(--bs-accent);
+  --bs-btn-active-bg: var(--bs-primary);
+  --bs-btn-active-border-color: var(--bs-primary);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--bs-accent);
+  --bs-btn-disabled-bg: var(--bs-tertiary);
+  --bs-btn-disabled-border-color: var(--bs-tertiary);
+}
+
+.text-tertiary{
+  --bs-text-opacity: 1;
+  color: var(--bs-tertiary) !important;
+}
+
+.text-accent{
+  --bs-text-opacity: 1;
+  color: var(--bs-accent) !important;
+}
+
+.bg-background {
+  background-color: var(--bs-background) !important;
+}
+.btn-background {
+  color: #fff;
+  background-color: var(--bs-background);
+  border-color: var(--bs-background);
+}
+.btn-background:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+.bg-accent {
+  background-color: var(--bs-accent) !important;
+}
+.btn-accent {
+  color: #fff;
+  background-color: var(--bs-accent);
+  border-color: var(--bs-accent);
+}
+.btn-accent:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+.btn-primary {
+  color: #fff;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+
+.bg-secondary {
+  background-color: var(--bs-secondary) !important;
+}
+.btn-secondary {
+  color: #fff;
+  background-color: var(--bs-secondary);
+  border-color: var(--bs-secondary);
+}
+.btn-secondary:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+
+.bg-tertiary {
+  background-color: var(--bs-tertiary) !important;
+}
+.btn-tertiary {
+  color: #fff;
+  background-color: var(--bs-tertiary);
+  border-color: var(--bs-tertiary);
+}
+.btn-tertiary:hover {
+  color: #fff;
+  background-color: #2a22b8;
+  border-color: #2520a6;
+}
+.moodboard {
+  border: 10px solid;
+  border-radius: 25px;
+  padding: 20px;
+  margin: auto;
+}
+
+.photo {
+  border: 5px solid white;
+}
+
+---
+
+File: src\index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+---
+
+File: src\LandingPage.js
+
+
+const LandingPage = () => {
+    return ( 
+        <div className="container pt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+            <div className="p-5 bg-secondary shadow"> 
+                <div className="p-5 bg-background shadow" style={{color:"#FFF2D8"}}>
+                    <h1 className="text-tertiary display-1  fw-bold" style={{ letterSpacing: "0.4em", color:"#FFF2D8"}}>
+                        Ty Crenshaw
+                    </h1>
+                    <br />
+                    <br />
+                    <div className="text-tertiary p-3">Software Developer</div>
+                    <br />
+                    <div className="text-tertiary p-3">Always curious, always learning</div>
+                    <br />
+                    <div className="text-tertiary p-3">Nature lover, occasional adventurer</div>
+                    <div style={{marginTop:"20px"}}>
+                        <button type="button" className="btn btn-light" onClick={() => window.location.href = "/Home"}>
+                            Explore
+                        </button>
+                    </div>   
+                </div>
+
+            </div>
+
+        </div>
+
+     );
+}
+ 
+export default LandingPage;
+
+---
+
+File: src\Navbar.js
+
+const Navbar = () => {
+    return (
+        <nav className="navbar navbar-expand-lg bg-background shadow">
+        <div className="container-fluid">
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <a className="nav-link active" aria-current="page" href="/Home">Home</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/Skills">Skills</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/Projects">Projects</a>
+              </li>
+              {/* <li className="nav-item">
+                <a className="nav-link" href="/Testimonials">Testimonials</a>
+              </li> */}
+              <li className="nav-item">
+                <a className="nav-link" href="/Contact">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    );
+}
+
+export default Navbar;
+
+---
+
+File: src\Projects.js
+
+const Projects = () => {
+    return (     
+        <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+            <h1 className="text-accent">Projects</h1>
+    
+            <div className="d-flex justify-content-between">
+                    <div className="mt-5 card col-5 shadow d">
+                        <div className="card-header bg-primary text-tertiary">
+                        </div>
+                        <div className="card-body">
+                            <a className="nav-link" href="/WorkProjects">Work</a>
+                        </div>
+                    </div>
+                    <div className="mt-5 card col-5 shadow">
+                        <div className="card-header bg-primary text-tertiary">
+                        </div>
+                        <div className="card-body">
+                            <a className="nav-link" href="/SchoolProjects">School</a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    );
+}
+ 
+export default Projects;
+
+---
+
+File: src\SchoolProjects.js
+
+//import React from 'react';
+import picture from './pictures/porfolio_photos/background2.jpg';
+
+// Using require.context to import all images from a folder
+const images = require.context('./pictures/class_photos', false, /\.(jpg|JPG|jpeg)$/);
+
+const SchoolProjects = () => {
+  // Creating an array of image URLs
+  const images = require.context('./pictures/class_photos', false, /\.(jpg|JPG|jpeg)$/);
+
+  const imageList = images.keys().map((image) => {
+    return images(image);
+  });
+    console.log(imageList);
+  return (
+    <div>
+      <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
+        <h1 className="text-accent">School Projects</h1>
+        <div>
+
+        </div>
+        <div>
+          
+        </div>
+        <div>
+         
+        </div>
+        <div className="mt-5 card w-75 shadow">
+            <div className="card-header bg-primary text-tertiary">
+                What is my schooling and where am I going?
+            </div>
+            <div className="card-body card- bg-tertiary">
+                <blockquote className="blockquote mb-0">
+                <p>I have completed a Bachelors of Science in Computer Science</p>
+                <p>I am currently working on Bachelor of Science with a major in Art and Design</p>
+                <p>Here are some of my photos from my current photography class</p>
+                </blockquote>
+            </div>
+        </div>
+
+        <div className="mt-5 container-fluid moodboard"  style={{ backgroundImage: `url(${picture})` }}>
+        <div className="row">
+            <div className="col-md-4 d-flex flex-column">
+            {imageList.slice(0, Math.ceil(imageList.length / 3)).map((image, index) => (
+                <img className="img-fluid mt-3 photo" src={image} alt={`Class photo ${index + 1}`} key={index} />
+            ))}
+            </div>
+            <div className="col-md-4 d-flex flex-column">
+            {imageList.slice(Math.ceil(imageList.length / 3), Math.ceil(2 * imageList.length / 3)).map((image, index) => (
+                <img className="img-fluid mt-3 photo" src={image} alt={`Class photo ${Math.ceil(imageList.length / 3) + index + 1}`} key={index} />
+            ))}
+            </div>
+            <div className="col-md-4 d-flex flex-column">
+            {imageList.slice(Math.ceil(2 * imageList.length / 3)).map((image, index) => (
+                <img className="img-fluid mt-3 photo" src={image} alt={`Class photo ${Math.ceil(2 * imageList.length / 3) + index + 1}`} key={index} />
+            ))}
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SchoolProjects;
+
+
+
+---
+
+File: src\Skills.js
+
+const Skills = () => {
+    return (     
+    <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+        <h1 className="text-accent">Skills</h1>
+
+        <div className="mt-5 card w-75 shadow">
+            <div className="card-header bg-primary text-tertiary">
+            What are the main programming languages, tools, and frameworks that you use in your work?
+            </div>
+            <div className="card-body card- bg-tertiary">
+                <blockquote className="blockquote mb-0">
+                <p>I am a .NET developer who uses C# as my primary programming language. I use the MVC pattern to create web applications that separate the presentation, business logic, and data access layers. I use SQL Server Management Studio (SSMS) as my database management tool, and SQL as my query language to interact with the data stored in the back end of my applications.</p>
+                </blockquote>
+            </div>
+        </div>
+
+        <div className="mt-5 card w-75 shadow">
+            <div className="card-header bg-primary text-tertiary">
+            What are the main types of software applications or systems that you develop or maintain?
+            </div>
+            <div className="card-body bg-tertiary">
+                <blockquote className="blockquote mb-0">
+                <p>I develop and maintain in-house projects that offer affiliate marketing services to other businesses. Affiliate marketing is a type of online marketing where affiliates earn commissions for referring customers or leads to a business. My projects provide tools for tracking, reporting, analytics, lead generation, and more to help my clients improve their marketing strategies and results.</p>
+                </blockquote>
+            </div>
+        </div>
+
+        <div className="mt-5 card w-75 shadow">
+            <div className="card-header bg-primary text-tertiary">
+            How do you collaborate with other developers, designers, testers, or stakeholders in your projects? What are the tools or methods that you use for communication and coordination?
+            </div>
+            <div className="card-body bg-tertiary">
+                <blockquote className="blockquote mb-0">
+                <p>I use Jira as my project management tool to keep track of tasks, features, bugs, and progress. I follow the agile methodology to deliver software in short and iterative cycles. I have daily stand-up meetings with my team to share what I have done, what I plan to do, and what challenges I face. I also have weekly sizing meetings with my team and stakeholders to estimate the effort and complexity of future features, and prioritize them according to the client’s needs and expectations.</p>
+                </blockquote>
+            </div>
+        </div>
+
+        <div className="mt-5 card w-75 shadow">
+            <div className="card-header bg-primary text-tertiary">
+            What are some of the most challenging or interesting projects that you have worked on or contributed to? What were the goals, challenges, solutions, and outcomes of those projects?
+            </div>
+            <div className="card-body bg-tertiary">
+                <blockquote className="blockquote mb-0">
+                <p>One of my most challenging projects was the partner sign-up project. The goal was to create a customizable sign-up page for each client that allows them to collect different information from their affiliates based on their requirements. Some of the challenges that I faced were handling a lot of variation and validation for each field, ensuring security and privacy of the data, and integrating with other systems or services. Some of the solutions that I came up with were creating a configurable interface for each client that allows them to specify what fields they want to include in their sign-up page, using standard hashing algorithms to encrypt sensitive data. Some of the outcomes or benefits of my project were increasing the conversion rate of affiliates, improving the user experience of the sign-up process, and enhancing the Client satisfaction.</p>
+                </blockquote>
+            </div>
+        </div>
+
+        <div className="mt-5 card w-75 shadow">
+            <div className="card-header bg-primary text-tertiary">
+            How do you keep your skills and knowledge up to date? What are some of the sources or resources that you use for learning new technologies or best practices?
+            </div>
+            <div className="card-body bg-tertiary">
+                <blockquote className="blockquote mb-0">
+                <p>I am always eager to learn new skills and technologies that are relevant to my work. Some of the sources or resources that I use for learning new technologies or best practices are online courses from Pluralsight, Podcasts, and videos from Youtube. Some of the topics or areas that I am interested in or curious about are AI, machine learning, cloud computing, etc. Some of the ways that I apply my learning to my work are experimenting with new tools or frameworks, such as React, Bootstrap, Generative AI, implementing new features or functionalities, such as Ad Listing, Creation, and Organization, improving existing code or processes, such as Partner Sign Up, and our Link Generator.</p>
+                </blockquote>
+            </div>
+        </div>
+    </div> );
+}
+ 
+export default Skills;
+
+---
+
+File: src\Testimonials.js
+
+const Testimonials = () => {
+    return ( 
+    <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+        <h2>Testimonials</h2>
+    </div> );
+}
+ 
+export default Testimonials;
+
+---
+
+File: src\WorkProjects.js
+
+import picture from './pictures/porfolio_photos/LinkTrustExample.png';
+import picture2 from './pictures/porfolio_photos/LinkTrustExample2.png';
+
+const WorkProjects = () => {
+    return ( 
+        
+    <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+        <h2>Work Projects</h2>
+
+        <div className='mt-5 p-3 bg-tertiary shadow'> 
+            <div className='bg-secondary m-3 p-5 shadow'>
+                <div className='mt-2'>
+                    <div>View my github: <a href="https://github.com/TyShelbyCrenshaw">github.com/TyShelbyCrenshaw</a></div>
+                </div>
+                <div className='mt-5'>Link Trust Projects</div>
+                <figure className='mt-2'>
+                    <figcaption>
+                        Ad Categories - A full stack project that uses CRUD operations for creating, reassigning, and deleting ad Categories.
+                        <br></br>
+                        There is also a full feature set of API to support the front end.
+                    </figcaption>
+                    <img className='mt-2 shadow img-fluid' style={{width:"900px"}} src={picture} alt="Link Trust Example" />
+                </figure>
+                <figure className='mt-5'>
+                    <figcaption>
+                        One of the biggest projects I worked on was Transaction Details reports.
+                        This report can filter by many criteria and can be exported to a CSV file.
+                        You can also edit the report which has a ton of complexities to it.
+                    </figcaption>
+                    <img className='mt-2 shadow img-fluid' style={{width:"900px"}} src={picture2} alt="Link Trust Example #2" />
+                </figure>   
+            </div>
+        </div>
+    </div> 
+    );
+}
+ 
+export default WorkProjects;
