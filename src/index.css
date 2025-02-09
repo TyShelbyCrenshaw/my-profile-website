@@ -1,3 +1,4 @@
+/* Base styles */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -12,17 +13,52 @@ code {
     monospace;
 }
 
-/* override the primary color classes */
+/* Custom variables */
 :root {
   --bs-background: #806743;
   --bs-primary: #BCA37F;
   --bs-secondary: #EAD7BB;
   --bs-tertiary: #FFF2D8;
-  --bs-accent: #113946;
+  --bs-accent: #4d391d;
+  --transition-speed: 0.3s;
+  --box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
+/* Navigation */
 .navbar-nav li a {
   color: var(--bs-tertiary) !important;
+}
+
+/* Text utilities */
+.text-tertiary {
+  color: var(--bs-tertiary) !important;
+}
+
+.text-accent {
+  color: var(--bs-accent) !important;
+}
+
+/* Background utilities */
+.bg-background { background-color: var(--bs-background) !important; }
+.bg-accent { background-color: var(--bs-accent) !important; }
+.bg-primary { background-color: var(--bs-primary) !important; }
+.bg-secondary { background-color: var(--bs-secondary) !important; }
+.bg-tertiary { background-color: var(--bs-tertiary) !important; }
+
+/* Button styles */
+.btn.btn-primary {
+  color: #fff !important;
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:active,
+.btn.btn-primary.active {
+  color: #fff !important;
+  background-color: var(--bs-background) !important;
+  border-color: var(--bs-accent) !important;
 }
 
 .btn-light {
@@ -36,65 +72,16 @@ code {
   --bs-btn-active-color: var(--bs-accent);
   --bs-btn-active-bg: var(--bs-primary);
   --bs-btn-active-border-color: var(--bs-primary);
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-active-shadow: var(--box-shadow);
   --bs-btn-disabled-color: var(--bs-accent);
   --bs-btn-disabled-bg: var(--bs-tertiary);
   --bs-btn-disabled-border-color: var(--bs-tertiary);
 }
 
-.text-tertiary{
-  --bs-text-opacity: 1;
-  color: var(--bs-tertiary) !important;
+.btn-light:hover {
+  transform: scale(1.05);
+  transition: transform var(--transition-speed) ease;
 }
-
-.text-accent{
-  --bs-text-opacity: 1;
-  color: var(--bs-accent) !important;
-}
-
-.bg-background {
-  background-color: var(--bs-background) !important;
-}
-.btn-background {
-  color: #fff;
-  background-color: var(--bs-background);
-  border-color: var(--bs-background);
-}
-.btn-background:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
-
-.bg-accent {
-  background-color: var(--bs-accent) !important;
-}
-.btn-accent {
-  color: #fff;
-  background-color: var(--bs-accent);
-  border-color: var(--bs-accent);
-}
-.btn-accent:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
-
-
-.bg-primary {
-  background-color: var(--bs-primary) !important;
-}
-.btn-primary {
-  color: #fff;
-  background-color: var(--bs-primary);
-  border-color: var(--bs-primary);
-}
-.btn-primary:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
-
 
 .bg-secondary {
   background-color: var(--bs-secondary) !important;
@@ -106,23 +93,11 @@ code {
 }
 .btn-secondary:hover {
   color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
+  background-color: #806743;
+  border-color: #4d391d;
 }
 
-.bg-tertiary {
-  background-color: var(--bs-tertiary) !important;
-}
-.btn-tertiary {
-  color: #fff;
-  background-color: var(--bs-tertiary);
-  border-color: var(--bs-tertiary);
-}
-.btn-tertiary:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
+/* Component styles */
 .moodboard {
   border: 10px solid;
   border-radius: 25px;
@@ -134,28 +109,18 @@ code {
   border: 5px solid white;
 }
 
-/* Custom animations */
+/* Animations */
 @keyframes gradientBg {
-  0% {
-      background-position: 0% 50%;
-  }
-  50% {
-      background-position: 100% 50%;
-  }
-  100% {
-      background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Add this to your existing classes or create new ones */
 .animate-gradient {
-  background: linear-gradient(270deg, var(--bs-background), var(--bs-primary), var(--bs-secondary));
+  background: linear-gradient(270deg, 
+    var(--bs-background), 
+    var(--bs-primary), 
+    var(--bs-secondary));
   background-size: 200% 200%;
   animation: gradientBg 15s ease infinite;
-}
-
-/* Optional hover effects for buttons */
-.btn-light:hover {
-  transform: scale(1.05);
-  transition: transform 0.3s ease;
 }
