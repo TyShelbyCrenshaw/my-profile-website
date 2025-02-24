@@ -1,0 +1,78 @@
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #bca37f; /* Match your portfolio palette */
+    border-radius: 50%;
+    transition: opacity 0.5s ease;
+  }
+
+  .sprite-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh; 
+    pointer-events: none;
+    z-index: 999;
+  }
+  
+  .sprite {
+    position: absolute;
+    top: -15px;
+    width: 30px;
+    height: 30px;
+    background-image: url('../pictures/sprite/PixelSprite/character.png');
+    background-size: 512px 256px; /* 4 columns x 32px, 4 rows x 32px */
+    background-repeat: no-repeat;
+    pointer-events: auto;
+    will-change: transform; /* Hint for hardware acceleration */
+  }
+   
+/* Idle Animation (4 frames) */
+.sprite.idle[data-frame="0"] { background-position: 0 0; }
+.sprite.idle[data-frame="1"] { background-position: -30px 0; }
+.sprite.idle[data-frame="2"] { background-position: -60px 0; }
+.sprite.idle[data-frame="3"] { background-position: -90px 0; }
+ 
+/* WalkLeft Animation (4 frames) */
+.sprite.walkLeft[data-frame="0"] { background-position: 0 -94px; }
+.sprite.walkLeft[data-frame="1"] { background-position: -30px -94px; }
+.sprite.walkLeft[data-frame="2"] { background-position: -60px -94px; }
+.sprite.walkLeft[data-frame="3"] { background-position: -90px -94px; }
+
+/* WalkRight Animation (4 frames) */
+.sprite.walkRight[data-frame="0"] { background-position: 0 -30px; }
+.sprite.walkRight[data-frame="1"] { background-position: -30px -30px; } 
+.sprite.walkRight[data-frame="2"] { background-position: -60px -30px; }
+.sprite.walkRight[data-frame="3"] { background-position: -90px -30px; }
+
+/* Jump Animation (3 frames) */ 
+.sprite.jump[data-frame="0"] { background-position: -150px 0; }
+.sprite.jump[data-frame="1"] { background-position: -181 px 0; }
+.sprite.jump[data-frame="2"] { background-position: -211px 0; }
+
+/* floating in air (4 frames) */
+.sprite.jump[data-frame="3"] { background-position: -271px 0; }
+.sprite.jump[data-frame="4"] { background-position: -301px 0; }
+.sprite.jump[data-frame="5"] { background-position: -331px 0; }
+.sprite.jump[data-frame="6"] { background-position: -361px 0; }
+
+/* touch ground from jump(1 frames) */
+.sprite.jump[data-frame="7"] { background-position: -405px 0; }
+  
+/* Attack Animation (4 frames) */
+.sprite.attack[data-frame="0"] { background-position: -15px -130px; }
+.sprite.attack[data-frame="1"] { background-position: -75px -130px; }
+.sprite.attack[data-frame="2"] { background-position: -135px -130px; }
+.sprite.attack[data-frame="3"] { background-position: -195px -130px; }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #bca37f;
+    border-radius: 50%;
+    will-change: transform, opacity; /* Hint for hardware acceleration */
+    transition: opacity 0.2s linear; /* Faster fade for performance */
+  }

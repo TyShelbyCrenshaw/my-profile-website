@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import WorkProjects from './WorkProjects';
 import SchoolProjects from './SchoolProjects';
+import ForFunProjects from './ForFunProjects';
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState('work');
@@ -18,10 +19,16 @@ const Projects = () => {
           Work Projects
         </button>
         <button 
-          className={`btn ${activeTab === 'school' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ${activeTab === 'school' ? 'btn-primary' : 'btn-secondary'} me-2`}
           onClick={() => setActiveTab('school')}
         >
           School Projects
+        </button>
+        <button 
+          className={`btn ${activeTab === 'forFun' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('forFun')}
+        >
+          For Fun
         </button>
       </div>
 
@@ -32,6 +39,9 @@ const Projects = () => {
         </div>
         <div className={`tab-pane fade ${activeTab === 'school' ? 'show active' : ''}`}>
           <SchoolProjects />
+        </div>
+        <div className={`tab-pane fade ${activeTab === 'forFun' ? 'show active' : ''}`}>
+          <ForFunProjects />
         </div>
       </div>
     </div>

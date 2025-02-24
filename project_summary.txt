@@ -21,7 +21,6 @@ public/
   TyTyPotteryIcon.png
 README.md
 src/
-  App.css
   App.js
   components/
     AnimatedBackground.js
@@ -429,15 +428,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ---
 
-File: src\App.css
-
-
-
----
-
 File: src\App.js
 
-import './App.css';
+//import './App.css';
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from './Navbar';
 import Home from './Home';
@@ -591,64 +584,145 @@ export default AnimatedBackground;
 
 File: src\Contact.js
 
+import React, { useState } from 'react';
+import emailjs from '@emailjs/browser';
 import picture from './pictures/porfolio_photos/atSymbol.png';
-//this is be tring to get a form they could fill out and it would
-//send me an email. I still think this would be neet but it is a lot of work
-//meaning idk how to do it and it was taking alot of time.
-// import { render } from '@react-email/render';
-// import AWS from 'aws-sdk';
-
-// AWS.config.update({ region: process.env.AWS_SES_REGION });
-
-// const emailHtml = render();
-
-// const options = {
-//   RawMessage: {
-//     Data: Buffer.from(
-//       `From: ${process.env.SOURCE_EMAIL}\r\n` +
-//         `To: ${process.env.DESTINATION_EMAIL}\r\n` +
-//         'Subject: hello world\r\n' +
-//         'MIME-Version: 1.0\r\n' +
-//         'Content-Type: multipart/mixed; boundary="NextPart"\r\n' +
-//         '\r\n' +
-//         '--NextPart\r\n' +
-//         'Content-Type: text/html; charset=us-ascii\r\n' +
-//         '\r\n' +
-//         `${emailHtml}\r\n` +
-//         '--NextPart--'
-//     ),
-//   },
-// };
-
-// const sendPromise = new AWS.SES({ apiVersion: '2010-12-01' })
-//   .sendRawEmail(options)
-//   .promise();
-
-// sendPromise
-//   .then((data) => {
-//     console.log(data.MessageId);
-//   })
-//   .catch((err) => {
-//     console.error(err, err.stack);
-//   });
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    from_name: '',
+    to_name: 'Ty',
+    message: ''
+  });
+  
+  const [status, setStatus] = useState({
+    submitting: false,
+    submitted: false,
+    error: null
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ submitting: true, submitted: false, error: null });
+
+    const templateParams = {
+      from_name: formData.from_name,
+      to_name: formData.to_name,
+      message: formData.message
+    };
+
+    try {
+      await emailjs.send(
+        'service_gpbeg2o',
+        'template_p5fuu5u',
+        templateParams,
+        'LXR5pEwAxnbEtCvOP'
+      );
+
+      setStatus({
+        submitting: false,
+        submitted: true,
+        error: null
+      });
+
+      // Clear form
+      setFormData({
+        from_name: '',
+        to_name: 'Ty',
+        message: ''
+      });
+
+    } catch (error) {
+        debugger;
+      console.error('EmailJS Error:', error);
+      setStatus({
+        submitting: false,
+        submitted: false,
+        error: 'Failed to send message. Please try again.'
+      });
+    }
+  };
+
   return ( 
-        <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
-            <div className='mt-5 p-3 bg-tertiary shadow'> 
-                <div className='bg-secondary m-3 p-5 shadow'>
-                    <h1>
-                        Contact Me
-                    </h1>
-                    <div className="mt-5">Email: linxtree
-                    <img src={picture} style={{height: "13px"}}/>
-                    gmail.com</div>
-                    <div className="mt-3">linkedin: <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/">Ty Crenshaw</a></div>
+    <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+      <div className='mt-5 p-3 bg-tertiary shadow'> 
+        <div className='bg-secondary m-3 p-5 shadow'>
+          <h1 className="text-accent mb-4">Contact Me</h1>
+          
+          {/* Contact Info */}
+          <div className="mb-5">
+            <div className="mt-5">Email: linxtree<img src={picture} style={{height: "13px"}}/>gmail.com</div>
+            <div className="mt-3">LinkedIn: <a href="https://www.linkedin.com/in/ty-crenshaw-641941108/" 
+               className="text-accent text-decoration-none">
+              Ty Crenshaw
+            </a></div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="bg-tertiary p-4 rounded shadow-sm">
+            <h4 className="text-accent mb-4">Send Me a Message</h4>
+            
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="from_name" className="form-label">Your Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="from_name"
+                  name="from_name"
+                  value={formData.from_name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="message" className="form-label">Message</label>
+                <textarea
+                  className="form-control"
+                  id="message"
+                  name="message"
+                  rows="5"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {status.error && (
+                <div className="alert alert-danger" role="alert">
+                  {status.error}
                 </div>
-            </div>
+              )}
+
+              {status.submitted && (
+                <div className="alert alert-success" role="alert">
+                  Message sent successfully!
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={status.submitting}
+              >
+                {status.submitting ? 'Sending...' : 'Send Message'}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
-   );
-}
+    </div>
+  );
+};
 
 export default ContactPage;
 
@@ -674,34 +748,98 @@ export function Email(props) {
 
 File: src\Home.js
 
-import backgroundImage from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
+import React from 'react';
+//import backgroundImage from './pictures/porfolio_photos/imgonline-com-ua-TextureSeamless-JCI8TaR1FBycHm.jpg';
 import picture from './pictures/porfolio_photos/FaceShot2.png';
+
 const Home = () => {
-    return (
-    <div className="container mt-5" style={{width: "100vw", height: "100vh"}}>
-        <div className='p-3 bg-tertiary shadow'> 
-            <div className='bg-secondary m-3 p-5 shadow'>
-                <div className="home container"> 
-                <div className="row">
-                <div className="col">
-                        <img src={picture} />
-                    </div>
-                    <div className="col">
-                        <h2>Ty Crenshaw</h2>
-                        <p className='mt-5'>
-                            My name is Ty Crenshaw and I am a 35-year-old software developer at LinkTrust, a company that provides online marketing solutions. I have been working there for over four years, using the .NET Framework with an React front end and a MSSQL database. I enjoy learning new things and keeping up with the latest technologies, especially in the field of artificial intelligence. In my spare time, I like to play video games with my wife, mainly Overwatch & Marvel Rivals, and Beyond All Reason, we also like to take walks. I also have some hobbies like hiking and climbing, but I don't do them as often as I used to. My goals are to improve my skills and knowledge as a developer, and to find new opportunities and challenges that can help me grow professionally and personally.
-                        </p>
-                    </div>
+  return (
+    <div className="container mt-5" style={{width: "100vw", minHeight: "100vh"}}>
+      <div className="p-4 bg-tertiary shadow"> 
+        <div className="bg-secondary m-3 p-5 shadow rounded">
+          <div className="container"> 
+            <div className="row align-items-center">
+              {/* Image Column */}
+              <div className="col-md-5 mb-4 mb-md-0">
+                <div className="position-relative">
+                  <div className="rounded-3 overflow-hidden shadow-lg">
+                    <img 
+                      src={picture} 
+                      alt="Ty Crenshaw"
+                      className="img-fluid"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover"
+                      }}
+                    />
+                  </div>
+                  {/* Decorative element */}
+                  <div 
+                    className="position-absolute bg-primary" 
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      top: "10px",
+                      left: "10px",
+                      zIndex: -1,
+                      opacity: 0.3,
+                      borderRadius: "0.5rem"
+                    }}
+                  ></div>
                 </div>
+              </div>
+
+              {/* Content Column */}
+              <div className="col-md-7">
+                <div className="ps-md-4">
+                  <h1 className="display-4 text-accent mb-4">Ty Crenshaw</h1>
+                  <h3 className="text-primary mb-4">Software Developer at LinkTrust</h3>
+                  
+                  <div className="mb-4">
+                    <h4 className="text-accent mb-3">Professional Background</h4>
+                    <p className="mb-4 text-secondary">
+                      As a software developer at LinkTrust, I specialize in building online marketing solutions using .NET Framework, React, and MSSQL database. With over four years of experience, I've developed robust solutions that help businesses optimize their marketing strategies.
+                    </p>
+                  </div>
+
+                  <div className="mb-4">
+                    <h4 className="text-accent mb-3">Technical Expertise</h4>
+                    <p className="mb-4 text-secondary">
+                      My work primarily focuses on full-stack development, combining .NET Framework backend with React frontend. I'm particularly interested in artificial intelligence and constantly exploring new technologies to enhance our solutions.
+                    </p>
+                  </div>
+
+                  <div className="mb-4">
+                    <h4 className="text-accent mb-3">Personal Interests</h4>
+                    <p className="mb-4 text-secondary">
+                      Outside of coding, I enjoy gaming with my wife (Overwatch, Marvel Rivals, Beyond All Reason), taking walks, and occasionally pursuing outdoor activities like hiking and climbing. I'm always seeking new opportunities to grow both professionally and personally.
+                    </p>
+                  </div>
+
+                  {/* Skills Tags */}
+                  <div className="mt-4">
+                    <div className="d-flex flex-wrap gap-2">
+                      {['.NET', 'React', 'MSSQL', 'Full Stack', 'AI'].map((skill) => (
+                        <span 
+                          key={skill}
+                          className="bg-primary text-tertiary px-3 py-1 rounded-pill"
+                          style={{ fontSize: "0.9rem" }}
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-
- 
-
-        </div>
+      </div>
     </div>
- );
-}
+  );
+};
 
 export default Home;
 
@@ -709,6 +847,7 @@ export default Home;
 
 File: src\index.css
 
+/* Base styles */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -723,17 +862,52 @@ code {
     monospace;
 }
 
-/* override the primary color classes */
+/* Custom variables */
 :root {
   --bs-background: #806743;
   --bs-primary: #BCA37F;
   --bs-secondary: #EAD7BB;
   --bs-tertiary: #FFF2D8;
-  --bs-accent: #113946;
+  --bs-accent: #4d391d;
+  --transition-speed: 0.3s;
+  --box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
+/* Navigation */
 .navbar-nav li a {
   color: var(--bs-tertiary) !important;
+}
+
+/* Text utilities */
+.text-tertiary {
+  color: var(--bs-tertiary) !important;
+}
+
+.text-accent {
+  color: var(--bs-accent) !important;
+}
+
+/* Background utilities */
+.bg-background { background-color: var(--bs-background) !important; }
+.bg-accent { background-color: var(--bs-accent) !important; }
+.bg-primary { background-color: var(--bs-primary) !important; }
+.bg-secondary { background-color: var(--bs-secondary) !important; }
+.bg-tertiary { background-color: var(--bs-tertiary) !important; }
+
+/* Button styles */
+.btn.btn-primary {
+  color: #fff !important;
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:active,
+.btn.btn-primary.active {
+  color: #fff !important;
+  background-color: var(--bs-background) !important;
+  border-color: var(--bs-accent) !important;
 }
 
 .btn-light {
@@ -747,65 +921,16 @@ code {
   --bs-btn-active-color: var(--bs-accent);
   --bs-btn-active-bg: var(--bs-primary);
   --bs-btn-active-border-color: var(--bs-primary);
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-active-shadow: var(--box-shadow);
   --bs-btn-disabled-color: var(--bs-accent);
   --bs-btn-disabled-bg: var(--bs-tertiary);
   --bs-btn-disabled-border-color: var(--bs-tertiary);
 }
 
-.text-tertiary{
-  --bs-text-opacity: 1;
-  color: var(--bs-tertiary) !important;
+.btn-light:hover {
+  transform: scale(1.05);
+  transition: transform var(--transition-speed) ease;
 }
-
-.text-accent{
-  --bs-text-opacity: 1;
-  color: var(--bs-accent) !important;
-}
-
-.bg-background {
-  background-color: var(--bs-background) !important;
-}
-.btn-background {
-  color: #fff;
-  background-color: var(--bs-background);
-  border-color: var(--bs-background);
-}
-.btn-background:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
-
-.bg-accent {
-  background-color: var(--bs-accent) !important;
-}
-.btn-accent {
-  color: #fff;
-  background-color: var(--bs-accent);
-  border-color: var(--bs-accent);
-}
-.btn-accent:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
-
-
-.bg-primary {
-  background-color: var(--bs-primary) !important;
-}
-.btn-primary {
-  color: #fff;
-  background-color: var(--bs-primary);
-  border-color: var(--bs-primary);
-}
-.btn-primary:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
-
 
 .bg-secondary {
   background-color: var(--bs-secondary) !important;
@@ -817,23 +942,11 @@ code {
 }
 .btn-secondary:hover {
   color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
+  background-color: #806743;
+  border-color: #4d391d;
 }
 
-.bg-tertiary {
-  background-color: var(--bs-tertiary) !important;
-}
-.btn-tertiary {
-  color: #fff;
-  background-color: var(--bs-tertiary);
-  border-color: var(--bs-tertiary);
-}
-.btn-tertiary:hover {
-  color: #fff;
-  background-color: #2a22b8;
-  border-color: #2520a6;
-}
+/* Component styles */
 .moodboard {
   border: 10px solid;
   border-radius: 25px;
@@ -845,30 +958,20 @@ code {
   border: 5px solid white;
 }
 
-/* Custom animations */
+/* Animations */
 @keyframes gradientBg {
-  0% {
-      background-position: 0% 50%;
-  }
-  50% {
-      background-position: 100% 50%;
-  }
-  100% {
-      background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Add this to your existing classes or create new ones */
 .animate-gradient {
-  background: linear-gradient(270deg, var(--bs-background), var(--bs-primary), var(--bs-secondary));
+  background: linear-gradient(270deg, 
+    var(--bs-background), 
+    var(--bs-primary), 
+    var(--bs-secondary));
   background-size: 200% 200%;
   animation: gradientBg 15s ease infinite;
-}
-
-/* Optional hover effects for buttons */
-.btn-light:hover {
-  transform: scale(1.05);
-  transition: transform 0.3s ease;
 }
 
 ---
@@ -966,101 +1069,170 @@ export default Navbar;
 
 File: src\Projects.js
 
+import React, { useState } from 'react';
+import WorkProjects from './WorkProjects';
+import SchoolProjects from './SchoolProjects';
+
 const Projects = () => {
-    return (     
-        <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
-            <h1 className="text-accent">Projects</h1>
-    
-            <div className="d-flex justify-content-between">
-                    <div className="mt-5 card col-5 shadow d">
-                        <div className="card-header bg-primary text-tertiary">
-                        </div>
-                        <div className="card-body">
-                            <a className="nav-link" href="/WorkProjects">Work</a>
-                        </div>
-                    </div>
-                    <div className="mt-5 card col-5 shadow">
-                        <div className="card-header bg-primary text-tertiary">
-                        </div>
-                        <div className="card-body">
-                            <a className="nav-link" href="/SchoolProjects">School</a>
-                        </div>
-                    </div>
-            </div>
+  const [activeTab, setActiveTab] = useState('work');
+
+  return (
+    <div className="container mt-5" style={{width: "100vw", minHeight: "100vh", overflow: "auto"}}>
+      <h1 className="text-accent mb-4">Projects</h1>
+
+      {/* Tab Navigation */}
+      <div className="d-flex mb-4">
+        <button 
+          className={`btn ${activeTab === 'work' ? 'btn-primary' : 'btn-secondary'} me-2`}
+          onClick={() => setActiveTab('work')}
+        >
+          Work Projects
+        </button>
+        <button 
+          className={`btn ${activeTab === 'school' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('school')}
+        >
+          School Projects
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        <div className={`tab-pane fade ${activeTab === 'work' ? 'show active' : ''}`}>
+          <WorkProjects />
         </div>
-    );
-}
- 
+        <div className={`tab-pane fade ${activeTab === 'school' ? 'show active' : ''}`}>
+          <SchoolProjects />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Projects;
 
 ---
 
 File: src\SchoolProjects.js
 
-//import React from 'react';
+import React from 'react';
 import picture from './pictures/porfolio_photos/background2.jpg';
-import mainBOS from './pictures/porfolio_photos/BOSContactSheet.jpg'
-
-// Using require.context to import all images from a folder
-const images = require.context('./pictures/class_photos', false, /\.(jpg|JPG|jpeg)$/);
+import mainBOS from './pictures/porfolio_photos/BOSContactSheet.jpg';
 
 const SchoolProjects = () => {
   // Creating an array of image URLs
   const images = require.context('./pictures/class_photos', false, /\.(jpg|JPG|jpeg)$/);
+  const imageList = images.keys().map((image) => images(image));
 
-  const imageList = images.keys().map((image) => {
-    return images(image);
-  });
   return (
-    <div>
-      <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
-        <h1 className="text-accent">School Projects</h1>
-        <div>
+    <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
+      {/* Education Section */}
+      <div className="p-3 bg-tertiary shadow"> 
+        <div className="bg-secondary m-3 p-5 shadow">
+          {/* Education Overview */}
+          <div className="mb-5">
+            <h2 className="text-accent mb-4">Educational Journey</h2>
+            <div className="bg-tertiary p-4 rounded shadow-sm">
+              <div className="d-flex align-items-center mb-4">
+                <div className="bg-primary rounded-circle p-3 me-3">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-tertiary">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="mb-2">Computer Science</h4>
+                  <p className="mb-0 text-accent">Bachelor of Science - Completed</p>
+                </div>
+              </div>
 
-        </div>
-        <div className="mt-5 card w-75 shadow">
-            <div className="card-header bg-primary text-tertiary">
-                What is my schooling and where am I going?
+              <div className="d-flex align-items-center">
+                <div className="bg-primary rounded-circle p-3 me-3">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-tertiary">
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                    <path d="M2 2l7.586 7.586"/>
+                    <circle cx="11" cy="11" r="2"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="mb-2">Art and Design</h4>
+                  <p className="mb-0 text-accent">Bachelor of Science - In Progress</p>
+                </div>
+              </div>
             </div>
-            <div className="card-body card- bg-tertiary">
-                <blockquote className="blockquote mb-0">
-                <p>I have completed a Bachelors of Science in Computer Science</p>
-                <p>I am currently working on Bachelor of Science with a major in Art and Design</p>
-                <p>Here are some of my photos from my current photography class</p>
-                </blockquote>
-            </div>
-        </div>
-
-        <div className="mt-5 container-fluid moodboard"  style={{ backgroundImage: `url(${picture})` }}>
-          <div className="row px-3">
-            <img className='photo w-full px-0' src={mainBOS}/>
           </div>
-        <div className="row">
-            <div className="col-md-4 d-flex flex-column">
-            {imageList.slice(0, Math.ceil(imageList.length / 3)).map((image, index) => (
-                <img className="img-fluid mt-3 photo" src={image} alt={`Class photo ${index + 1}`} key={index} />
-            ))}
+
+          {/* Photography Section */}
+          <div className="mt-5">
+            <h3 className="text-accent mb-4">Photography Portfolio</h3>
+            <div className="moodboard p-4" style={{ 
+              backgroundImage: `url(${picture})`,
+              borderRadius: "1rem",
+              boxShadow: "0 0.5rem 1rem rgba(0, 0, 0, 0.15)"
+            }}>
+              {/* Contact Sheet */}
+              <div className="row mb-4">
+                <div className="col-12">
+                  <img 
+                    className="img-fluid rounded shadow photo" 
+                    src={mainBOS} 
+                    alt="Contact Sheet"
+                    style={{ width: "100%" }}
+                  />
+                </div>
+              </div>
+
+              {/* Photo Grid - Maintaining your existing grid structure */}
+              <div className="row">
+                {/* First Column */}
+                <div className="col-md-4 d-flex flex-column">
+                  {imageList.slice(0, Math.ceil(imageList.length / 3)).map((image, index) => (
+                    <div key={index} className="mb-4">
+                      <img 
+                        className="img-fluid rounded shadow photo" 
+                        src={image} 
+                        alt={`Class photo ${index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Second Column */}
+                <div className="col-md-4 d-flex flex-column">
+                  {imageList.slice(Math.ceil(imageList.length / 3), Math.ceil(2 * imageList.length / 3)).map((image, index) => (
+                    <div key={index} className="mb-4">
+                      <img 
+                        className="img-fluid rounded shadow photo" 
+                        src={image} 
+                        alt={`Class photo ${Math.ceil(imageList.length / 3) + index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Third Column */}
+                <div className="col-md-4 d-flex flex-column">
+                  {imageList.slice(Math.ceil(2 * imageList.length / 3)).map((image, index) => (
+                    <div key={index} className="mb-4">
+                      <img 
+                        className="img-fluid rounded shadow photo" 
+                        src={image} 
+                        alt={`Class photo ${Math.ceil(2 * imageList.length / 3) + index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="col-md-4 d-flex flex-column">
-            {imageList.slice(Math.ceil(imageList.length / 3), Math.ceil(2 * imageList.length / 3)).map((image, index) => (
-                <img className="img-fluid mt-3 photo" src={image} alt={`Class photo ${Math.ceil(imageList.length / 3) + index + 1}`} key={index} />
-            ))}
-            </div>
-            <div className="col-md-4 d-flex flex-column">
-            {imageList.slice(Math.ceil(2 * imageList.length / 3)).map((image, index) => (
-                <img className="img-fluid mt-3 photo" src={image} alt={`Class photo ${Math.ceil(2 * imageList.length / 3) + index + 1}`} key={index} />
-            ))}
-            </div>
-        </div>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default SchoolProjects;
-
-
 
 ---
 
@@ -1266,50 +1438,86 @@ import picture from './pictures/porfolio_photos/LinkTrustExample.png';
 import picture2 from './pictures/porfolio_photos/LinkTrustExample2.png';
 import picture3 from './pictures/porfolio_photos/UserRoles.png';
 
+import React from 'react';
+
 const WorkProjects = () => {
-    return (
+  return (
+    <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
+      <h2 className="text-accent mb-4">Work Projects</h2>
 
-        <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
-            <h2>Work Projects</h2>
-
-            <div className='mt-5 p-3 bg-tertiary shadow'>
-                <div className='bg-secondary m-3 p-5 shadow'>
-                    <div className='mt-2'>
-                        <div>View my github: <a href="https://github.com/TyShelbyCrenshaw">github.com/TyShelbyCrenshaw</a></div>
-                    </div>
-                    <div className='mt-5'>Link Trust Projects</div>
-                    <figure className='mt-2'>
-                        <figcaption>
-                            User Roles
-                            <ul>
-                                <li>View existing roles organized by type (Client, Partner, Advertiser)</li>
-                                <li>Create new roles for any user type</li>
-                                <li>Edit existing roles' permissions</li>
-                                <li>Delete custom roles (but not default system roles)</li>
-                            </ul>
-                        </figcaption>
-                        <img className='mt-2 shadow img-fluid' style={{ width: "900px" }} src={picture3} alt="Link Trust Example" />
-                    </figure>
-                    <figure className='mt-2'>
-                        <figcaption>
-                            Ad Categories - A full stack project that uses CRUD operations for creating, reassigning, and deleting ad Categories.
-                            <br></br>
-                            There is also a full feature set of API to support the front end.
-                        </figcaption>
-                        <img className='mt-2 shadow img-fluid' style={{ width: "900px" }} src={picture} alt="Link Trust Example" />
-                    </figure>
-                    <figure className='mt-5'>
-                        <figcaption>
-                            One of the biggest projects I worked on was Transaction Details reports.
-                            This report can filter by many criteria and can be exported to a CSV file.
-                            You can also edit the report which has a ton of complexities to it.
-                        </figcaption>
-                        <img className='mt-2 shadow img-fluid' style={{ width: "900px" }} src={picture2} alt="Link Trust Example #2" />
-                    </figure>
-                </div>
+      <div className="mt-5 p-3 bg-tertiary shadow">
+        <div className="bg-secondary m-3 p-5 shadow">
+          {/* GitHub Section */}
+          <div className="bg-primary p-4 rounded shadow-sm mb-5">
+            <h5 className="text-tertiary mb-3">Connect With Me</h5>
+            <div className="d-flex align-items-center">
+              <svg height="24" width="24" viewBox="0 0 16 16" className="text-tertiary">
+                <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+              </svg>
+              <a href="https://github.com/TyShelbyCrenshaw" className="text-accent ms-2 text-decoration-none">github.com/TyShelbyCrenshaw</a>
             </div>
+          </div>
+
+          {/* Link Trust Projects Section */}
+          <h4 className="text-accent mb-4">Link Trust Projects</h4>
+
+          {/* Project Cards */}
+          <div className="project-cards">
+            {/* User Roles Project */}
+            <div className="bg-tertiary p-4 rounded shadow-sm mb-5">
+              <h5 className="text-accent mb-3">User Roles Management System</h5>
+              <div className="mb-4">
+                <ul className="list-unstyled">
+                  <li className="mb-2">• View existing roles organized by type (Client, Partner, Advertiser)</li>
+                  <li className="mb-2">• Create new roles for any user type</li>
+                  <li className="mb-2">• Edit existing roles' permissions</li>
+                  <li className="mb-2">• Delete custom roles (but not default system roles)</li>
+                </ul>
+              </div>
+              <img 
+                className="rounded shadow-sm img-fluid mb-2" 
+                style={{ width: "100%", maxWidth: "900px" }} 
+                src={picture3} 
+                alt="User Roles Interface" 
+              />
+            </div>
+
+            {/* Ad Categories Project */}
+            <div className="bg-tertiary p-4 rounded shadow-sm mb-5">
+              <h5 className="text-accent mb-3">Ad Categories Management</h5>
+              <p className="mb-4">
+                A full-stack project implementing CRUD operations for ad categories management.
+                Features a comprehensive API backend supporting all frontend operations.
+              </p>
+              <img 
+                className="rounded shadow-sm img-fluid mb-2" 
+                style={{ width: "100%", maxWidth: "900px" }} 
+                src={picture} 
+                alt="Ad Categories Interface" 
+              />
+            </div>
+
+            {/* Transaction Details Project */}
+            <div className="bg-tertiary p-4 rounded shadow-sm mb-5">
+              <h5 className="text-accent mb-3">Transaction Details Reporting System</h5>
+              <p className="mb-4">
+                A comprehensive reporting system featuring:
+                <br />• Advanced filtering capabilities
+                <br />• CSV export functionality
+                <br />• Complex inline editing system
+              </p>
+              <img 
+                className="rounded shadow-sm img-fluid" 
+                style={{ width: "100%", maxWidth: "900px" }} 
+                src={picture2} 
+                alt="Transaction Details Interface" 
+              />
+            </div>
+          </div>
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
 
 export default WorkProjects;
