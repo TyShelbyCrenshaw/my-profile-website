@@ -32,17 +32,11 @@ const Projects = () => {
         </button>
       </div>
 
-      {/* Tab Content */}
+      {/* Tab Content - Using conditional rendering instead of CSS classes */}
       <div className="tab-content">
-        <div className={`tab-pane fade ${activeTab === 'work' ? 'show active' : ''}`}>
-          <WorkProjects />
-        </div>
-        <div className={`tab-pane fade ${activeTab === 'school' ? 'show active' : ''}`}>
-          <SchoolProjects />
-        </div>
-        <div className={`tab-pane fade ${activeTab === 'forFun' ? 'show active' : ''}`}>
-          <ForFunProjects />
-        </div>
+        {activeTab === 'work' && <WorkProjects />}
+        {activeTab === 'school' && <SchoolProjects />}
+        {activeTab === 'forFun' && <ForFunProjects />}
       </div>
     </div>
   );

@@ -1,0 +1,41 @@
+/* .enemy {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-image: url('../pictures/sprite/EnemySprite/enemy.png');
+    background-size: 512px 256px;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    will-change: transform;
+    z-index: 998; 
+  }
+   */
+   .enemy {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: red; /* Temporary visible background */
+    border: 2px solid black; /* Add a visible border */
+    /* Comment out the background-image temporarily */
+    /* background-image: url('../pictures/sprite/EnemySprite/enemy.png'); */
+    pointer-events: none;
+    will-change: transform;
+    z-index: 998; /* Below player (999) */
+  }
+  /* Walk Animation - Right Direction (4 frames) */
+  .enemy.walk.right[data-frame="0"] { background-position: 0 0; }
+  .enemy.walk.right[data-frame="1"] { background-position: -30px 0; }
+  .enemy.walk.right[data-frame="2"] { background-position: -60px 0; }
+  .enemy.walk.right[data-frame="3"] { background-position: -90px 0; }
+  
+  /* Walk Animation - Left Direction (4 frames) */
+  .enemy.walk.left[data-frame="0"] { background-position: 0 -30px; }
+  .enemy.walk.left[data-frame="1"] { background-position: -30px -30px; }
+  .enemy.walk.left[data-frame="2"] { background-position: -60px -30px; }
+  .enemy.walk.left[data-frame="3"] { background-position: -90px -30px; }
+  
+  /* Death Animation (4 frames) */
+  .enemy.death[data-frame="0"] { background-position: 0 -60px; }
+  .enemy.death[data-frame="1"] { background-position: -30px -60px; }
+  .enemy.death[data-frame="2"] { background-position: -60px -60px; }
+  .enemy.death[data-frame="3"] { background-position: -90px -60px; }
