@@ -36,6 +36,12 @@ const PixelSprite = () => {
 
   const isImmuneRef = useRef(false);
   
+  // Game state
+  const [gameActive, setGameActive] = useState(true);
+  
+  // Death animation state
+  const [isDying, setIsDying] = useState(false);
+  
   // Restart game function
   const handleRestart = useCallback(() => {
     // Reset player state
@@ -65,6 +71,12 @@ const PixelSprite = () => {
     // Reset immunity
     isImmuneRef.current = false;
     
+    // Reset death state
+    setIsDying(false);
+    
+    // Set game as active
+    setGameActive(true);
+    
     // Restart enemy spawning
     if (enemySpawnTimerRef.current) {
       clearTimeout(enemySpawnTimerRef.current);
@@ -78,6 +90,9 @@ const PixelSprite = () => {
   useEffect(() => {
     let lastUpdate = 0;
     const handleMouseMove = (e) => {
+      // Only process mouse movements when game is active
+      if (!gameActive || isDying) return;
+      
       const now = performance.now();
       if (now - lastUpdate > 16) {
         setMousePos({ x: e.clientX, y: e.clientY });
@@ -87,11 +102,13 @@ const PixelSprite = () => {
     
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [gameActive, isDying]);
 
   // Handle keyboard events (Space for jump)
   useEffect(() => {
     const handleKeyPress = (e) => {
+      if (!gameActive || isDying) return;
+      
       if (e.code === 'Space' && !animation.isPlaying) {
         e.preventDefault();
         playJumpAnimation();
@@ -100,11 +117,13 @@ const PixelSprite = () => {
     
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [animation.isPlaying]);
+  }, [animation.isPlaying, gameActive, isDying]);
 
   // Handle global click for attack
   useEffect(() => {
     const handleGlobalClick = (e) => {
+      if (!gameActive || isDying) return;
+      
       if (e.button === 0 && !animation.isPlaying) {
         playAnimation('attack', 4, 125);
       }
@@ -112,10 +131,12 @@ const PixelSprite = () => {
     
     window.addEventListener('click', handleGlobalClick);
     return () => window.removeEventListener('click', handleGlobalClick);
-  }, [animation.isPlaying]);
+  }, [animation.isPlaying, gameActive, isDying]);
 
   // Spawn enemies periodically
   const spawnEnemy = useCallback(() => {
+    if (!gameActive) return;
+    
     // Add a new enemy with unique ID
     setEnemies(prev => [
       ...prev, 
@@ -125,7 +146,7 @@ const PixelSprite = () => {
     // Schedule next spawn (random interval between 3-8 seconds)
     const nextSpawnTime = 3000 + Math.random() * 5000;
     enemySpawnTimerRef.current = setTimeout(spawnEnemy, nextSpawnTime);
-  }, []);
+  }, [gameActive]);
   
   useEffect(() => {
     // Initial spawn
@@ -142,14 +163,68 @@ const PixelSprite = () => {
     };
   }, []);
 
+  // Play the death animation
+  const playDeathAnimation = () => {
+    setIsDying(true);
+    clearTimeout(animationTimerRef.current);
+    
+    setAnimation({
+      type: 'die',
+      frame: 0,
+      isPlaying: true
+    });
+    
+    const frameCount = 7; // 0-6 frames
+    const frameDuration = 150; // milliseconds per frame
+    let currentFrame = 0;
+    
+    const advanceFrame = () => {
+      currentFrame++;
+      
+      if (currentFrame >= frameCount) {
+        // End of animation - game over
+        setAnimation({
+          type: 'die',
+          frame: 6, // Keep on last frame
+          isPlaying: false
+        });
+        
+        setGameActive(false);
+        return;
+      }
+      
+      // Update with the new frame number
+      setAnimation(prev => ({
+        ...prev,
+        frame: currentFrame
+      }));
+      
+      // Schedule next frame
+      animationTimerRef.current = setTimeout(advanceFrame, frameDuration);
+    };
+    
+    // Start the animation sequence
+    animationTimerRef.current = setTimeout(advanceFrame, frameDuration);
+  };
+
   const handlePlayerHit = () => {
-    if (isImmuneRef.current) {
+    if (isImmuneRef.current || isDying) {
       return;
     }
     
     isImmuneRef.current = true;
     lastHitTimeRef.current = Date.now();
-    setHealth(prev => Math.max(0, prev - 10));
+    
+    setHealth(prev => {
+      const newHealth = Math.max(0, prev - 50);
+      
+      // If health reaches zero, trigger death animation
+      if (newHealth <= 0 && !isDying) {
+        playDeathAnimation();
+      }
+      
+      return newHealth;
+    });
     
     setTimeout(() => {
       isImmuneRef.current = false;
@@ -258,7 +333,7 @@ const PixelSprite = () => {
   
   // Cycle idle/walk animations
   useEffect(() => {
-    if (!animation.isPlaying) {
+    if (!animation.isPlaying && gameActive && !isDying) {
       const cycleDuration = 125; // ms per frame
       
       const cycleIdleWalkFrames = () => {
@@ -271,10 +346,12 @@ const PixelSprite = () => {
       const timerId = setInterval(cycleIdleWalkFrames, cycleDuration);
       return () => clearInterval(timerId);
     }
-  }, [animation.isPlaying]);
+  }, [animation.isPlaying, gameActive, isDying]);
 
   // Movement and state detection
   useEffect(() => {
+    if (!gameActive || isDying) return;
+    
     let animationFrameId;
     const MAX_PARTICLES = 20;
 
@@ -322,7 +399,7 @@ const PixelSprite = () => {
 
     animationFrameId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [mousePos, particles.length, animation.isPlaying]);
+  }, [mousePos, particles.length, animation.isPlaying, gameActive, isDying]);
 
   const reportEnemyPosition = (enemyId, position) => {
     setEnemyPositions(prev => ({
@@ -333,7 +410,7 @@ const PixelSprite = () => {
 
   // Centralized collision detection
   useEffect(() => {
-    if (isImmuneRef.current) return;
+    if (!gameActive || isImmuneRef.current || isDying) return;
     
     Object.entries(enemyPositions).forEach(([enemyId, enemyPos]) => {
       const dx = spritePos.x - enemyPos.x;
@@ -342,14 +419,25 @@ const PixelSprite = () => {
       
       if (distance < 20 && !isImmuneRef.current) {
         isImmuneRef.current = true;
-        setHealth(prev => Math.max(0, prev - 10));
+        setHealth(prev => {
+          const newHealth = Math.max(0, prev - 50);
+          if (newHealth <= 0 && !isDying) {
+            playDeathAnimation();
+          }
+          return newHealth;
+        });
         
         setTimeout(() => {
           isImmuneRef.current = false;
         }, 1000);
       }
     });
-  }, [enemyPositions, spritePos]);
+  }, [enemyPositions, spritePos, gameActive, isDying]);
+
+  // Handle Game Over button clicks separately
+  const handleGameOverClick = (e) => {
+    e.stopPropagation(); // Prevent the click from reaching elements beneath
+  };
 
   return (
     <div className="sprite-container">
@@ -381,7 +469,7 @@ const PixelSprite = () => {
         className={`sprite ${animation.type}`}
         data-frame={animation.frame}
         style={{
-          transform: `translate(${spritePos.x - 15}px, ${spritePos.y - 15 + jumpOffset}px)`,
+          transform: `translate(${spritePos.x - 15}px, ${spritePos.y - 30 + jumpOffset}px)`,
           willChange: 'transform',
         }}
       />
@@ -399,14 +487,20 @@ const PixelSprite = () => {
         />
       ))}
 
-      {/* Game Over message if health is 0 */}
-      {health <= 0 && (
-        <div className="game-over">
+      {/* Game Over message */}
+      {!gameActive && (
+        <div 
+          className="game-over"
+          onClick={handleGameOverClick}
+        >
           <h2>Game Over!</h2>
           <p>Final Score: {score}</p>
-          {/* <button onClick={handleRestart}>Restart</button> */}
+          <button onClick={handleRestart}>
+            Restart
+          </button>
         </div>
       )}
+
     </div>
   );
 };

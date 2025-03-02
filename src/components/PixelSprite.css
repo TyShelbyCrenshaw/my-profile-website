@@ -15,11 +15,11 @@
     height: 100vh; 
     pointer-events: none;
     z-index: 999;
+    overflow: hidden; /* Prevent scrolling */
   }
   
   .sprite {
     position: absolute;
-    top: -15px;
     width: 30px;
     height: 30px;
     background-image: url('../pictures/sprite/PixelSprite/character.png');
@@ -27,6 +27,7 @@
     background-repeat: no-repeat;
     pointer-events: auto;
     will-change: transform; /* Hint for hardware acceleration */
+    z-index: 999;
   }
    
 /* Idle Animation (4 frames) */
@@ -36,10 +37,10 @@
 .sprite.idle[data-frame="3"] { background-position: -90px 0; }
  
 /* WalkLeft Animation (4 frames) */
-.sprite.walkLeft[data-frame="0"] { background-position: 0 -94px; }
-.sprite.walkLeft[data-frame="1"] { background-position: -30px -94px; }
-.sprite.walkLeft[data-frame="2"] { background-position: -60px -94px; }
-.sprite.walkLeft[data-frame="3"] { background-position: -90px -94px; }
+.sprite.walkLeft[data-frame="0"] { background-position: 0 -92px; }
+.sprite.walkLeft[data-frame="1"] { background-position: -30px -92px; }
+.sprite.walkLeft[data-frame="2"] { background-position: -60px -92px; }
+.sprite.walkLeft[data-frame="3"] { background-position: -90px -92px; }
 
 /* WalkRight Animation (4 frames) */
 .sprite.walkRight[data-frame="0"] { background-position: 0 -30px; }
@@ -48,24 +49,33 @@
 .sprite.walkRight[data-frame="3"] { background-position: -90px -30px; }
 
 /* Jump Animation (3 frames) */ 
-.sprite.jump[data-frame="0"] { background-position: -150px 0; }
-.sprite.jump[data-frame="1"] { background-position: -181 px 0; }
-.sprite.jump[data-frame="2"] { background-position: -211px 0; }
+.sprite.jump[data-frame="0"] { background-position: -149px 0; }
+.sprite.jump[data-frame="1"] { background-position: -179px 0; }
+.sprite.jump[data-frame="2"] { background-position: -209px 0; }
 
 /* floating in air (4 frames) */
-.sprite.jump[data-frame="3"] { background-position: -271px 0; }
-.sprite.jump[data-frame="4"] { background-position: -301px 0; }
-.sprite.jump[data-frame="5"] { background-position: -331px 0; }
-.sprite.jump[data-frame="6"] { background-position: -361px 0; }
+.sprite.jump[data-frame="3"] { background-position: -269px 0; }
+.sprite.jump[data-frame="4"] { background-position: -299px 0; }
+.sprite.jump[data-frame="5"] { background-position: -329px 0; }
+.sprite.jump[data-frame="6"] { background-position: -359px 0; }
 
 /* touch ground from jump(1 frames) */
-.sprite.jump[data-frame="7"] { background-position: -405px 0; }
+.sprite.jump[data-frame="7"] { background-position: -406px 0; }
   
 /* Attack Animation (4 frames) */
-.sprite.attack[data-frame="0"] { background-position: -15px -130px; }
-.sprite.attack[data-frame="1"] { background-position: -75px -130px; }
-.sprite.attack[data-frame="2"] { background-position: -135px -130px; }
-.sprite.attack[data-frame="3"] { background-position: -195px -130px; }
+.sprite.attack[data-frame="0"] { background-position: -13px -127px; }
+.sprite.attack[data-frame="1"] { background-position: -73px -127px; }
+.sprite.attack[data-frame="2"] { background-position: -133px -127px; }
+.sprite.attack[data-frame="3"] { background-position: -193px -127px; }
+
+.sprite.die[data-frame="0"] { background-position: -271px -125px; }
+.sprite.die[data-frame="1"] { background-position: -301px -125px; }
+.sprite.die[data-frame="2"] { background-position: -328px -125px; }  
+.sprite.die[data-frame="3"] { background-position: -357px -125px; }
+.sprite.die[data-frame="4"] { background-position: -386px -125px; }   
+.sprite.die[data-frame="5"] { background-position: -413px -125px; }
+.sprite.die[data-frame="6"] { background-position: -441px -125px; }
+.sprite.die[data-frame="7"] { background-position: -441px  -125px; }
 
   .particle {
     position: absolute;
@@ -111,7 +121,7 @@
   margin-bottom: 10px;
 }
 
-/* Game Over Screen */
+/* Game Over Screen with pointer-events fix */
 .game-over {
   position: fixed;
   top: 50%;
@@ -124,6 +134,7 @@
   text-align: center;
   z-index: 1001;
   font-family: 'Press Start 2P', monospace;
+  pointer-events: auto; /* Ensure clicks are captured */
 }
 
 .game-over h2 {
@@ -143,6 +154,7 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  pointer-events: auto; /* Ensure button clicks work */
 }
 
 .game-over button:hover {
