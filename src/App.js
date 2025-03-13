@@ -10,7 +10,7 @@ import SchoolProjects from './SchoolProjects';
 import Testimonials from './Testimonials';
 import Contact from './Contact';
 import AnimatedBackground from './components/AnimatedBackground.js';
-import MusicPlayer from './components/music/MusicPlayer.js'; 
+import MusicPage from './MusicPage'; 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import './index.css';
@@ -34,7 +34,7 @@ const DefaultContainer = () => (
         <Route exact path="/Contact" element={<Contact />} />
         <Route exact path="/WorkProjects" element={<WorkProjects />} />
         <Route exact path="/SchoolProjects" element={<SchoolProjects />} />
-        <Route exact path="/Music" element={<MusicPlayer />} />
+        <Route exact path="/Music" element={<MusicPage />} />
       </Routes>
   </div>
 );
