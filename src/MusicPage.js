@@ -1,8 +1,5 @@
 // src/MusicPage.js
 import React, { useState, useRef, useEffect } from 'react';
-// import song1 from '../../../music/forever-live-sessions-vol-2-hq.mp3';
-//import song1 from "/music/forever-live-sessions-vol-2-hq.mp3"
-//import song1 from '/music/forever-live-sessions-vol-2-hq.mp3';
 
 const MusicPage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -14,7 +11,7 @@ const MusicPage = () => {
   
   // You'll need to replace these with your actual music files
   const tracks = [
-    { title: "Song Name 1", artist: "Artist 1", src: "/music/forever-live-sessions-vol-2-hq.mp3" },
+    { title: "Song Name 1", artist: "Artist 1", src: process.env.PUBLIC_URL + "/music/forever-live-sessions-vol-2-hq.mp3" },
   ];
   
   useEffect(() => {
