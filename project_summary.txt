@@ -99,8 +99,10 @@ src/
       walking.png
     sprite/
       EnemySprite/
+        enemy-1.png
         enemy.png
       PixelSprite/
+        character-1.png
         character.png
   Projects.js
   SchoolProjects.js
@@ -594,63 +596,69 @@ export default AnimatedBackground;
 
 File: src\components\PixelEnemy.css
 
-/* .enemy {
+.enemy {
     position: absolute;
     width: 30px;
     height: 30px;
     background-image: url('../pictures/sprite/EnemySprite/enemy.png');
-    background-size: 512px 256px;
+    background-size: 120px 240px;
     background-repeat: no-repeat;
     pointer-events: none;
     will-change: transform;
     z-index: 998; 
   }
-   */
-   .enemy {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background-color: red; /* Temporary visible background */
-    border: 2px solid black; /* Add a visible border */
-    /* Comment out the background-image temporarily */
-    /* background-image: url('../pictures/sprite/EnemySprite/enemy.png'); */
-    pointer-events: none;
-    will-change: transform;
-    z-index: 998; /* Below player (999) */
-  }
-  /* Walk Animation - Right Direction (4 frames) */
-  .enemy.walk.right[data-frame="0"] { background-position: 0 0; }
-  .enemy.walk.right[data-frame="1"] { background-position: -30px 0; }
-  .enemy.walk.right[data-frame="2"] { background-position: -60px 0; }
-  .enemy.walk.right[data-frame="3"] { background-position: -90px 0; }
   
-  /* Walk Animation - Left Direction (4 frames) */
-  .enemy.walk.left[data-frame="0"] { background-position: 0 -30px; }
-  .enemy.walk.left[data-frame="1"] { background-position: -30px -30px; }
-  .enemy.walk.left[data-frame="2"] { background-position: -60px -30px; }
-  .enemy.walk.left[data-frame="3"] { background-position: -90px -30px; }
+  .enemy.walk.down[data-frame="0"] { background-position: 0 0; }
+  .enemy.walk.down[data-frame="1"] { background-position: -30px 0; }
+  .enemy.walk.down[data-frame="2"] { background-position: -60px 0; }
+  .enemy.walk.down[data-frame="3"] { background-position: -90px 0; }
+
+  .enemy.walk.right[data-frame="0"] { background-position: 0 -48px; }
+  .enemy.walk.right[data-frame="1"] { background-position: -30px -48px; }
+  .enemy.walk.right[data-frame="2"] { background-position: -60px -48px; }
+  .enemy.walk.right[data-frame="3"] { background-position: -90px -48px; }
   
-  /* Death Animation (4 frames) */
-  .enemy.death[data-frame="0"] { background-position: 0 -60px; }
-  .enemy.death[data-frame="1"] { background-position: -30px -60px; }
-  .enemy.death[data-frame="2"] { background-position: -60px -60px; }
-  .enemy.death[data-frame="3"] { background-position: -90px -60px; }
+  .enemy.walk.up[data-frame="0"] { background-position: 0 -95px; }
+  .enemy.walk.up[data-frame="1"] { background-position: -30px -95px; }
+  .enemy.walk.up[data-frame="2"] { background-position: -60px -95px; }
+  .enemy.walk.up[data-frame="3"] { background-position: -90px -95px; }
+  
+  .enemy.walk.left[data-frame="0"] { background-position: 0 -144px; }
+  .enemy.walk.left[data-frame="1"] { background-position: -30px -144px; }
+  .enemy.walk.left[data-frame="2"] { background-position: -60px -144px; }
+  .enemy.walk.left[data-frame="3"] { background-position: -90px -144px; }
+
+  .enemy.death[data-frame="0"] { background-position: 0 -175px; }
+  .enemy.death[data-frame="1"] { background-position: -30px -175px; }
+  .enemy.death[data-frame="2"] { background-position: -60px -175px; }
+  .enemy.death[data-frame="3"] { background-position: -90px -175px; }
 
 ---
 
 File: src\components\PixelEnemy.js
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './PixelEnemy.css';
 
+// Use React.memo without a comparison function so enemies always update
 const PixelEnemy = ({ playerPos, reportPosition, onDefeated, id }) => {
   // Enemy state
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isActive, setIsActive] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
   
+  // Animation state
+  const [direction, setDirection] = useState('down');
+  const [animFrame, setAnimFrame] = useState(0);
+  
+  // Death animation state
+  const [isDying, setIsDying] = useState(false);
+  
   // Ref to track if defeat has been triggered to prevent multiple calls
   const isBeingDefeatedRef = useRef(false);
+  const animationFrameIdRef = useRef(null);
+  const deathAnimationTimerRef = useRef(null);
+  const speedRef = useRef(2); // pixels per frame
   
   // Set initial random position
   useEffect(() => {
@@ -662,47 +670,116 @@ const PixelEnemy = ({ playerPos, reportPosition, onDefeated, id }) => {
       case 0: // top
         x = Math.random() * window.innerWidth;
         y = -30;
+        setDirection('down');
         break;
       case 1: // right
         x = window.innerWidth + 30;
         y = Math.random() * window.innerHeight;
+        setDirection('left');
         break;
       case 2: // bottom
         x = Math.random() * window.innerWidth;
         y = window.innerHeight + 30;
+        setDirection('up');
         break;
       case 3: // left
         x = -30;
         y = Math.random() * window.innerHeight;
+        setDirection('right');
         break;
       default:
         x = 0;
         y = 0;
+        setDirection('down');
     }
     
     setPosition({ x, y });
     setIsInitialized(true);
   }, []);
   
+  // Handle animation frames for walking
+  useEffect(() => {
+    if (!isActive || !isInitialized || isDying) return;
+    
+    const animationInterval = setInterval(() => {
+      setAnimFrame(prev => (prev + 1) % 4);
+    }, 150); // Animation frame rate
+    
+    return () => clearInterval(animationInterval);
+  }, [isActive, isInitialized, isDying]);
+  
+  // Play death animation
+  const playDeathAnimation = useCallback(() => {
+    setIsDying(true);
+    
+    // Start death animation
+    setAnimFrame(0);
+    
+    const advanceDeathFrame = (frame) => {
+      if (frame >= 4) {
+        // Animation complete, notify parent component
+        if (typeof onDefeated === 'function') {
+          onDefeated(id);
+        }
+        return;
+      }
+      
+      setAnimFrame(frame);
+      
+      // Schedule next frame
+      deathAnimationTimerRef.current = setTimeout(() => {
+        advanceDeathFrame(frame + 1);
+      }, 150); // 150ms per frame
+    };
+    
+    // Start the death animation
+    advanceDeathFrame(0);
+  }, [id, onDefeated]);
+  
+  // Check for player attack with useCallback for better performance
+  const checkForDefeat = useCallback((distance) => {
+    const attackRange = 50;
+    if (distance < attackRange && playerPos.isAttacking && !isBeingDefeatedRef.current) {
+      isBeingDefeatedRef.current = true;
+      
+      // Cancel movement animation frame
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+      
+      // Play death animation
+      playDeathAnimation();
+    }
+  }, [playerPos.isAttacking, playDeathAnimation]);
+  
   // Simplified direct movement approach
   useEffect(() => {
-    if (!isActive || !isInitialized) return;
-    
-    let lastTime = performance.now();
-    const speed = 2; // pixels per frame
+    if (!isActive || !isInitialized || isDying) return;
     
     const moveEnemy = () => {
-      const now = performance.now();
-      lastTime = now;
-      
       // Calculate direction to player
       const dx = playerPos.x - position.x;
       const dy = playerPos.y - position.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance > 1) { // Only move if we're not already at the target
+        // Update movement direction based on angle to player
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        
+        // Determine direction based on angle
+        // Convert angle to 4-direction system
+        if (angle >= -45 && angle < 45) {
+          setDirection('right');
+        } else if (angle >= 45 && angle < 135) {
+          setDirection('down');
+        } else if (angle >= -135 && angle < -45) {
+          setDirection('up');
+        } else {
+          setDirection('left');
+        }
+        
         // Calculate new position with speed adjustment
-        const speedFactor = Math.min(speed, distance) / distance;
+        const speedFactor = Math.min(speedRef.current, distance) / distance;
         const newX = position.x + dx * speedFactor;
         const newY = position.y + dy * speedFactor;
         
@@ -712,36 +789,37 @@ const PixelEnemy = ({ playerPos, reportPosition, onDefeated, id }) => {
         // Report position to parent for centralized collision detection
         reportPosition(id, { x: newX, y: newY });
         
-        const attackRange = 50;
-
-        // Check for player attack - with safeguard against multiple defeats
-        if (distance < attackRange && playerPos.isAttacking && !isBeingDefeatedRef.current) {
-          // Set the defeat flag immediately to prevent multiple calls
-          isBeingDefeatedRef.current = true;
-          
-          // Set enemy to inactive
-          setIsActive(false);
-          
-          // Call onDefeated callback (once and only once)
-          if (typeof onDefeated === 'function') {
-            onDefeated(id);
-          }
-        }
+        // Check for player attack
+        checkForDefeat(distance);
       }
       
       // Continue animation if still active
-      if (isActive) {
-        requestAnimationFrame(moveEnemy);
+      if (isActive && !isDying) {
+        animationFrameIdRef.current = requestAnimationFrame(moveEnemy);
       }
     };
     
     // Start the animation loop
-    const animationId = requestAnimationFrame(moveEnemy);
+    animationFrameIdRef.current = requestAnimationFrame(moveEnemy);
     
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
     };
-  }, [isActive, isInitialized, playerPos, id, reportPosition, onDefeated]);
+  }, [isActive, isInitialized, isDying, playerPos, id, reportPosition, checkForDefeat, position]);
+  
+  // Clean up any lingering timers on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+      if (deathAnimationTimerRef.current) {
+        clearTimeout(deathAnimationTimerRef.current);
+      }
+    };
+  }, []);
   
   // Skip rendering if not active
   if (!isActive) {
@@ -750,20 +828,16 @@ const PixelEnemy = ({ playerPos, reportPosition, onDefeated, id }) => {
   
   return (
     <div 
-      className="enemy"
+      className={`enemy ${isDying ? 'death' : 'walk'} ${!isDying ? direction : ''}`}
+      data-frame={animFrame}
       style={{
-        position: 'absolute',
-        width: '30px',
-        height: '30px',
-        backgroundColor: 'rgba(255, 0, 0, 0.7)',
-        transform: `translate(${position.x - 15}px, ${position.y - 15}px)`,
-        zIndex: 998
+        transform: `translate(${position.x - 15}px, ${position.y - 30}px)`
       }}
     />
   );
 };
 
-export default PixelEnemy;
+export default React.memo(PixelEnemy);
 
 ---
 
@@ -786,11 +860,11 @@ File: src\components\PixelSprite.css
     height: 100vh; 
     pointer-events: none;
     z-index: 999;
+    overflow: hidden; /* Prevent scrolling */
   }
   
   .sprite {
     position: absolute;
-    top: -15px;
     width: 30px;
     height: 30px;
     background-image: url('../pictures/sprite/PixelSprite/character.png');
@@ -798,6 +872,7 @@ File: src\components\PixelSprite.css
     background-repeat: no-repeat;
     pointer-events: auto;
     will-change: transform; /* Hint for hardware acceleration */
+    z-index: 999;
   }
    
 /* Idle Animation (4 frames) */
@@ -807,10 +882,10 @@ File: src\components\PixelSprite.css
 .sprite.idle[data-frame="3"] { background-position: -90px 0; }
  
 /* WalkLeft Animation (4 frames) */
-.sprite.walkLeft[data-frame="0"] { background-position: 0 -94px; }
-.sprite.walkLeft[data-frame="1"] { background-position: -30px -94px; }
-.sprite.walkLeft[data-frame="2"] { background-position: -60px -94px; }
-.sprite.walkLeft[data-frame="3"] { background-position: -90px -94px; }
+.sprite.walkLeft[data-frame="0"] { background-position: 0 -92px; }
+.sprite.walkLeft[data-frame="1"] { background-position: -30px -92px; }
+.sprite.walkLeft[data-frame="2"] { background-position: -60px -92px; }
+.sprite.walkLeft[data-frame="3"] { background-position: -90px -92px; }
 
 /* WalkRight Animation (4 frames) */
 .sprite.walkRight[data-frame="0"] { background-position: 0 -30px; }
@@ -819,24 +894,33 @@ File: src\components\PixelSprite.css
 .sprite.walkRight[data-frame="3"] { background-position: -90px -30px; }
 
 /* Jump Animation (3 frames) */ 
-.sprite.jump[data-frame="0"] { background-position: -150px 0; }
-.sprite.jump[data-frame="1"] { background-position: -181 px 0; }
-.sprite.jump[data-frame="2"] { background-position: -211px 0; }
+.sprite.jump[data-frame="0"] { background-position: -149px 0; }
+.sprite.jump[data-frame="1"] { background-position: -179px 0; }
+.sprite.jump[data-frame="2"] { background-position: -209px 0; }
 
 /* floating in air (4 frames) */
-.sprite.jump[data-frame="3"] { background-position: -271px 0; }
-.sprite.jump[data-frame="4"] { background-position: -301px 0; }
-.sprite.jump[data-frame="5"] { background-position: -331px 0; }
-.sprite.jump[data-frame="6"] { background-position: -361px 0; }
+.sprite.jump[data-frame="3"] { background-position: -269px 0; }
+.sprite.jump[data-frame="4"] { background-position: -299px 0; }
+.sprite.jump[data-frame="5"] { background-position: -329px 0; }
+.sprite.jump[data-frame="6"] { background-position: -359px 0; }
 
 /* touch ground from jump(1 frames) */
-.sprite.jump[data-frame="7"] { background-position: -405px 0; }
+.sprite.jump[data-frame="7"] { background-position: -406px 0; }
   
 /* Attack Animation (4 frames) */
-.sprite.attack[data-frame="0"] { background-position: -15px -130px; }
-.sprite.attack[data-frame="1"] { background-position: -75px -130px; }
-.sprite.attack[data-frame="2"] { background-position: -135px -130px; }
-.sprite.attack[data-frame="3"] { background-position: -195px -130px; }
+.sprite.attack[data-frame="0"] { background-position: -13px -127px; }
+.sprite.attack[data-frame="1"] { background-position: -73px -127px; }
+.sprite.attack[data-frame="2"] { background-position: -133px -127px; }
+.sprite.attack[data-frame="3"] { background-position: -193px -127px; }
+
+.sprite.die[data-frame="0"] { background-position: -271px -125px; }
+.sprite.die[data-frame="1"] { background-position: -301px -125px; }
+.sprite.die[data-frame="2"] { background-position: -328px -125px; }  
+.sprite.die[data-frame="3"] { background-position: -357px -125px; }
+.sprite.die[data-frame="4"] { background-position: -386px -125px; }   
+.sprite.die[data-frame="5"] { background-position: -413px -125px; }
+.sprite.die[data-frame="6"] { background-position: -441px -125px; }
+.sprite.die[data-frame="7"] { background-position: -441px  -125px; }
 
   .particle {
     position: absolute;
@@ -882,7 +966,7 @@ File: src\components\PixelSprite.css
   margin-bottom: 10px;
 }
 
-/* Game Over Screen */
+/* Game Over Screen with pointer-events fix */
 .game-over {
   position: fixed;
   top: 50%;
@@ -895,6 +979,7 @@ File: src\components\PixelSprite.css
   text-align: center;
   z-index: 1001;
   font-family: 'Press Start 2P', monospace;
+  pointer-events: auto; /* Ensure clicks are captured */
 }
 
 .game-over h2 {
@@ -914,6 +999,7 @@ File: src\components\PixelSprite.css
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  pointer-events: auto; /* Ensure button clicks work */
 }
 
 .game-over button:hover {
@@ -929,7 +1015,7 @@ File: src\components\PixelSprite.css
 
 File: src\components\PixelSprite.js
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './PixelSprite.css';
 import PixelEnemy from './PixelEnemy';
 
@@ -967,10 +1053,63 @@ const PixelSprite = () => {
 
   const isImmuneRef = useRef(false);
   
+  // Game state
+  const [gameActive, setGameActive] = useState(true);
+  
+  // Death animation state
+  const [isDying, setIsDying] = useState(false);
+  
+  // Restart game function
+  const handleRestart = useCallback(() => {
+    // Reset player state
+    setHealth(100);
+    setScore(0);
+    
+    // Clear all enemies
+    setEnemies([]);
+    setEnemyPositions({});
+    
+    // Reset player position to center
+    setSpritePos({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    
+    // Reset animation state
+    setAnimation({
+      type: 'idle',
+      frame: 0,
+      isPlaying: false
+    });
+    
+    // Reset jump offset
+    setJumpOffset(0);
+    
+    // Clear particles
+    setParticles([]);
+    
+    // Reset immunity
+    isImmuneRef.current = false;
+    
+    // Reset death state
+    setIsDying(false);
+    
+    // Set game as active
+    setGameActive(true);
+    
+    // Restart enemy spawning
+    if (enemySpawnTimerRef.current) {
+      clearTimeout(enemySpawnTimerRef.current);
+    }
+    enemySpawnTimerRef.current = setTimeout(() => {
+      spawnEnemy();
+    }, 2000);
+  }, []);
+  
   // Throttle mouse move events
   useEffect(() => {
     let lastUpdate = 0;
     const handleMouseMove = (e) => {
+      // Only process mouse movements when game is active
+      if (!gameActive || isDying) return;
+      
       const now = performance.now();
       if (now - lastUpdate > 16) {
         setMousePos({ x: e.clientX, y: e.clientY });
@@ -980,11 +1119,13 @@ const PixelSprite = () => {
     
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [gameActive, isDying]);
 
   // Handle keyboard events (Space for jump)
   useEffect(() => {
     const handleKeyPress = (e) => {
+      if (!gameActive || isDying) return;
+      
       if (e.code === 'Space' && !animation.isPlaying) {
         e.preventDefault();
         playJumpAnimation();
@@ -993,11 +1134,13 @@ const PixelSprite = () => {
     
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [animation.isPlaying]);
+  }, [animation.isPlaying, gameActive, isDying]);
 
   // Handle global click for attack
   useEffect(() => {
     const handleGlobalClick = (e) => {
+      if (!gameActive || isDying) return;
+      
       if (e.button === 0 && !animation.isPlaying) {
         playAnimation('attack', 4, 125);
       }
@@ -1005,27 +1148,29 @@ const PixelSprite = () => {
     
     window.addEventListener('click', handleGlobalClick);
     return () => window.removeEventListener('click', handleGlobalClick);
-  }, [animation.isPlaying]);
+  }, [animation.isPlaying, gameActive, isDying]);
 
   // Spawn enemies periodically
-  useEffect(() => {
-    const spawnEnemy = () => {
-      // Add a new enemy with unique ID
-      setEnemies(prev => [
-        ...prev, 
-        { id: Date.now() }
-      ]);
-      
-      // Schedule next spawn (random interval between 3-8 seconds)
-      const nextSpawnTime = 3000 + Math.random() * 5000;
-      enemySpawnTimerRef.current = setTimeout(spawnEnemy, nextSpawnTime);
-    };
+  const spawnEnemy = useCallback(() => {
+    if (!gameActive) return;
     
+    // Add a new enemy with unique ID
+    setEnemies(prev => [
+      ...prev, 
+      { id: Date.now() }
+    ]);
+    
+    // Schedule next spawn (random interval between 3-8 seconds)
+    const nextSpawnTime = 3000 + Math.random() * 5000;
+    enemySpawnTimerRef.current = setTimeout(spawnEnemy, nextSpawnTime);
+  }, [gameActive]);
+  
+  useEffect(() => {
     // Initial spawn
     enemySpawnTimerRef.current = setTimeout(spawnEnemy, 2000);
     
     return () => clearTimeout(enemySpawnTimerRef.current);
-  }, []);
+  }, [spawnEnemy]);
 
   // Clean up any lingering timers on unmount
   useEffect(() => {
@@ -1035,54 +1180,90 @@ const PixelSprite = () => {
     };
   }, []);
 
-// Replace the existing handlePlayerHit function with this one
-const handlePlayerHit = () => {
-  // First check: If player is already immune, ignore this hit completely
-  if (isImmuneRef.current) {
-    return;
-  }
-  
-  // Set immune state immediately to block any other concurrent hits
-  isImmuneRef.current = true;
-  
-  // Store hit time for visual feedback
-  lastHitTimeRef.current = Date.now();
-  
-  // Reduce health
-  setHealth(prev => Math.max(0, prev - 10));
-  
-  // Reset immunity after delay - this ensures exactly one second of immunity
-  // regardless of how many hit attempts occur
-  setTimeout(() => {
-    isImmuneRef.current = false;
-  }, 1000); // 1 second immunity
-  
-  // Visual feedback could be added here (flash effect, etc.)
-};
-  
-// Modify enemy defeated handler
-const handleEnemyDefeated = (enemyId) => {
-  // Remove the enemy
-  setEnemies(prev => prev.filter(enemy => enemy.id !== enemyId));
-  
-  // Also remove from positions tracking
-  setEnemyPositions(prev => {
-    const newPositions = {...prev};
-    delete newPositions[enemyId];
-    return newPositions;
-  });
-  
-  // Increase score
-  setScore(prev => prev + 100);
-};
+  // Play the death animation
+  const playDeathAnimation = () => {
+    setIsDying(true);
+    clearTimeout(animationTimerRef.current);
+    
+    setAnimation({
+      type: 'die',
+      frame: 0,
+      isPlaying: true
+    });
+    
+    const frameCount = 7; // 0-6 frames
+    const frameDuration = 150; // milliseconds per frame
+    let currentFrame = 0;
+    
+    const advanceFrame = () => {
+      currentFrame++;
+      
+      if (currentFrame >= frameCount) {
+        // End of animation - game over
+        setAnimation({
+          type: 'die',
+          frame: 6, // Keep on last frame
+          isPlaying: false
+        });
+        
+        setGameActive(false);
+        return;
+      }
+      
+      // Update with the new frame number
+      setAnimation(prev => ({
+        ...prev,
+        frame: currentFrame
+      }));
+      
+      // Schedule next frame
+      animationTimerRef.current = setTimeout(advanceFrame, frameDuration);
+    };
+    
+    // Start the animation sequence
+    animationTimerRef.current = setTimeout(advanceFrame, frameDuration);
+  };
 
+  const handlePlayerHit = () => {
+    if (isImmuneRef.current || isDying) {
+      return;
+    }
+    
+    isImmuneRef.current = true;
+    lastHitTimeRef.current = Date.now();
+    
+    setHealth(prev => {
+      const newHealth = Math.max(0, prev - 50);
+      
+      // If health reaches zero, trigger death animation
+      if (newHealth <= 0 && !isDying) {
+        playDeathAnimation();
+      }
+      
+      return newHealth;
+    });
+    
+    setTimeout(() => {
+      isImmuneRef.current = false;
+    }, 1000);
+  };
+  
+  const handleEnemyDefeated = (enemyId) => {
+    setEnemies(prev => prev.filter(enemy => enemy.id !== enemyId));
+    
+    setEnemyPositions(prev => {
+      const newPositions = {...prev};
+      delete newPositions[enemyId];
+      return newPositions;
+    });
+    
+    setScore(prev => prev + 100);
+  };
 
   // Special jump animation with vertical motion
   const playJumpAnimation = () => {
-    // Cancel any ongoing animation
     clearTimeout(animationTimerRef.current);
     
-    // Set initial animation state
     setAnimation({
       type: 'jump',
       frame: 0,
@@ -1130,10 +1311,8 @@ const handleEnemyDefeated = (enemyId) => {
   
   // Standard animation player for non-jump animations
   const playAnimation = (type, frameCount, frameDuration) => {
-    // Cancel any ongoing animation
     clearTimeout(animationTimerRef.current);
     
-    // Set initial animation state
     setAnimation({
       type,
       frame: 0,
@@ -1171,8 +1350,7 @@ const handleEnemyDefeated = (enemyId) => {
   
   // Cycle idle/walk animations
   useEffect(() => {
-    // Only handle idle/walk cycles when not in a special animation
-    if (!animation.isPlaying) {
+    if (!animation.isPlaying && gameActive && !isDying) {
       const cycleDuration = 125; // ms per frame
       
       const cycleIdleWalkFrames = () => {
@@ -1185,10 +1363,12 @@ const handleEnemyDefeated = (enemyId) => {
       const timerId = setInterval(cycleIdleWalkFrames, cycleDuration);
       return () => clearInterval(timerId);
     }
-  }, [animation.isPlaying]);
+  }, [animation.isPlaying, gameActive, isDying]);
 
   // Movement and state detection
   useEffect(() => {
+    if (!gameActive || isDying) return;
+    
     let animationFrameId;
     const MAX_PARTICLES = 20;
 
@@ -1236,49 +1416,45 @@ const handleEnemyDefeated = (enemyId) => {
 
     animationFrameId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [mousePos, particles.length, animation.isPlaying]);
+  }, [mousePos, particles.length, animation.isPlaying, gameActive, isDying]);
 
-  const getPlayerPosition = () => ({
-    x: spritePos.x,
-    y: spritePos.y + jumpOffset,
-    isAttacking: animation.type === 'attack'
-  });
+  const reportEnemyPosition = (enemyId, position) => {
+    setEnemyPositions(prev => ({
+      ...prev,
+      [enemyId]: position
+    }));
+  };
 
-  // Add this function to track enemy positions
-const reportEnemyPosition = (enemyId, position) => {
-  setEnemyPositions(prev => ({
-    ...prev,
-    [enemyId]: position
-  }));
-};
-
-// Add this to your update function or in a separate useEffect
-// This handles centralized collision detection
-useEffect(() => {
-  // Skip if player is already immune
-  if (isImmuneRef.current) return;
-  
-  // Check for collisions with all enemies
-  Object.entries(enemyPositions).forEach(([enemyId, enemyPos]) => {
-    const dx = spritePos.x - enemyPos.x;
-    const dy = spritePos.y - enemyPos.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+  // Centralized collision detection
+  useEffect(() => {
+    if (!gameActive || isImmuneRef.current || isDying) return;
     
-    // If collision detected and player is not immune
-    if (distance < 20 && !isImmuneRef.current) {
-      // Set immune immediately
-      isImmuneRef.current = true;
+    Object.entries(enemyPositions).forEach(([enemyId, enemyPos]) => {
+      const dx = spritePos.x - enemyPos.x;
+      const dy = spritePos.y - enemyPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
       
-      // Reduce health
-      setHealth(prev => Math.max(0, prev - 10));
-      
-      // Set immunity period
-      setTimeout(() => {
-        isImmuneRef.current = false;
-      }, 1000);
-    }
-  });
-}, [enemyPositions, spritePos]);
+      if (distance < 20 && !isImmuneRef.current) {
+        isImmuneRef.current = true;
+        setHealth(prev => {
+          const newHealth = Math.max(0, prev - 50);
+          if (newHealth <= 0 && !isDying) {
+            playDeathAnimation();
+          }
+          return newHealth;
+        });
+        
+        setTimeout(() => {
+          isImmuneRef.current = false;
+        }, 1000);
+      }
+    });
+  }, [enemyPositions, spritePos, gameActive, isDying]);
+
+  // Handle Game Over button clicks separately
+  const handleGameOverClick = (e) => {
+    e.stopPropagation(); // Prevent the click from reaching elements beneath
+  };
 
   return (
     <div className="sprite-container">
@@ -1290,21 +1466,19 @@ useEffect(() => {
         <div className="score">Score: {score}</div>
       </div>
 
-     
-{enemies.map(enemy => (
-  <PixelEnemy 
-    key={enemy.id}
-    id={enemy.id}
-    playerPos={{
-      x: spritePos.x,
-      y: spritePos.y + jumpOffset,
-      isAttacking: animation.type === 'attack'
-    }}
-    reportPosition={reportEnemyPosition}
-    onDefeated={handleEnemyDefeated}
-  />
-))}
-
+      {enemies.map(enemy => (
+        <PixelEnemy 
+          key={enemy.id}
+          id={enemy.id}
+          playerPos={{
+            x: spritePos.x,
+            y: spritePos.y + jumpOffset,
+            isAttacking: animation.type === 'attack'
+          }}
+          reportPosition={reportEnemyPosition}
+          onDefeated={handleEnemyDefeated}
+        />
+      ))}
       
       {/* Sprite with frame-based animation */}
       <div
@@ -1312,7 +1486,7 @@ useEffect(() => {
         className={`sprite ${animation.type}`}
         data-frame={animation.frame}
         style={{
-          transform: `translate(${spritePos.x - 15}px, ${spritePos.y - 15 + jumpOffset}px)`,
+          transform: `translate(${spritePos.x - 15}px, ${spritePos.y - 30 + jumpOffset}px)`,
           willChange: 'transform',
         }}
       />
@@ -1330,17 +1504,20 @@ useEffect(() => {
         />
       ))}
 
-      {/* Game Over message if health is 0 */}
-      {health <= 0 && (
-        <div className="game-over">
+      {/* Game Over message */}
+      {!gameActive && (
+        <div 
+          className="game-over"
+          onClick={handleGameOverClick}
+        >
           <h2>Game Over!</h2>
           <p>Final Score: {score}</p>
-          <button onClick={() => {
-            setHealth(100);
-            setScore(0);
-          }}>Restart</button>
+          <button onClick={handleRestart}>
+            Restart
+          </button>
         </div>
       )}
+
     </div>
   );
 };
@@ -1515,21 +1692,20 @@ export function Email(props) {
 
 File: src\ForFunProjects.js
 
-import React, { useState, useEffect, useRef } from 'react';
-import PixelSprite from './components/PixelSprite'; // Assuming you’ll create this in the next step
-//import './ForFunProjects.css'; // Optional: Add custom styles
+import React from 'react';
+import PixelSprite from './components/PixelSprite';
 
 const ForFunProjects = () => {
   return (
-    <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
+    <div className="container mt-5" style={{ width: "100%", minHeight: "100%", overflow: "hidden" }}>
       <h1 className="text-accent mb-4">For Fun Projects</h1>
       <div className="p-3 bg-tertiary shadow">
         <div className="bg-secondary m-3 p-5 shadow">
           <h3 className="text-accent mb-4">Interactive Pixelated Adventure Sprite</h3>
           <p className="text-secondary mb-4">
-            Move your mouse to guide a pixel art character around the screen! Click to make it jump, left click to attack, and watch it leave a trail of pixel dust.
+            Move your mouse to guide a pixel art character around the screen! Press space to make it jump, left click to attack, and watch it leave a trail of pixel dust.
           </p>
-          <div className="sprite-wrapper">
+          <div className="sprite-wrapper" style={{ position: "relative", height: "0", overflow: "visible" }}>
             <PixelSprite />
           </div>
         </div>
