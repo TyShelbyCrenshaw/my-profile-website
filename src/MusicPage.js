@@ -1,5 +1,5 @@
 // src/MusicPage.js
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 // Import all processed audio files
 import audioFiles from './music/audioIndex';
 // Import track metadata
@@ -11,7 +11,6 @@ const MusicPage = () => {
   const [volume, setVolume] = useState(0.7);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [audioSource, setAudioSource] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -36,7 +35,7 @@ const MusicPage = () => {
   }, []);
 
   // Load the selected track
-  const loadTrack = (trackIndex) => {
+  const loadTrack = useCallback((trackIndex) => {
     if (!tracks || tracks.length === 0 || trackIndex >= tracks.length) {
       setError("No tracks available");
       return;
@@ -64,9 +63,6 @@ const MusicPage = () => {
           // Create a data URL
           const dataUrl = `data:audio/mpeg;base64,${base64Data}`;
           setLoadingProgress(60);
-          
-          // Set the audio source
-          setAudioSource(dataUrl);
           
           // Pause current audio if playing
           if (audioRef.current) {
@@ -123,7 +119,7 @@ const MusicPage = () => {
       setError(`Error setting up audio: ${e.message}`);
       setLoading(false);
     }
-  };
+  }, [tracks]);
 
   // Initial track load when tracks are available
   useEffect(() => {
@@ -138,7 +134,7 @@ const MusicPage = () => {
         audioRef.current.src = '';
       }
     };
-  }, [tracks]);
+  }, [tracks, loadTrack]);
   
   useEffect(() => {
     const audio = audioRef.current;
