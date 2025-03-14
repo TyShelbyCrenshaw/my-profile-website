@@ -1,7 +1,8 @@
 // src/MusicPage.js
 import React, { useState, useRef, useEffect } from 'react';
-// Import the audio file
+// Import both audio files
 import audioBase64 from './music/audioBase64.js';
+import audioBase64_2 from './music/audioBase64-2.js';
 
 const MusicPage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -14,21 +15,23 @@ const MusicPage = () => {
   const [loading, setLoading] = useState(true);
   const audioRef = useRef(null);
   
-  // Define your tracks
+  // Define your tracks with both audio files
   const tracks = [
-    { title: "Song Name 1", artist: "Artist 1", src: "" },
+    { title: "Song Name 1", artist: "Artist 1", audioData: audioBase64 },
+    { title: "Song Name 2", artist: "Artist 2", audioData: audioBase64_2 }
   ];
 
-  useEffect(() => {
-    // Set loading state while we process the audio
+  // Load the selected track
+  const loadTrack = (trackIndex) => {
     setLoading(true);
     setError(null);
     
     try {
-      console.log("Processing audio data...");
+      console.log(`Loading track ${trackIndex + 1}...`);
+      const trackData = tracks[trackIndex];
       
-      // Try a different approach - using a data URL directly
-      const base64Data = audioBase64.trim(); // trim any whitespace
+      // Process the audio data
+      const base64Data = trackData.audioData.trim();
       
       // Log the first and last few characters to debug
       console.log("First 20 chars:", base64Data.substring(0, 20));
@@ -37,10 +40,16 @@ const MusicPage = () => {
       // Create a data URL
       const dataUrl = `data:audio/mpeg;base64,${base64Data}`;
       
-      // Set the audio source directly to the data URL instead of creating a blob
+      // Set the audio source
       setAudioSource(dataUrl);
       
-      // Create the audio element
+      // Pause current audio if playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+      
+      // Create a new audio element
       const audio = new Audio();
       audio.src = dataUrl;
       audioRef.current = audio;
@@ -54,7 +63,6 @@ const MusicPage = () => {
       
       audio.addEventListener('error', (e) => {
         console.error("Audio loading error:", e);
-        // Get more detailed error information
         const errorDetails = audio.error ? 
           `Code: ${audio.error.code}, Message: ${audio.error.message}` : 
           'Unknown error';
@@ -62,12 +70,24 @@ const MusicPage = () => {
         setLoading(false);
       });
       
+      audio.addEventListener('ended', () => {
+        setIsPlaying(false);
+      });
+      
       console.log("Audio setup complete");
+      
+      // Update current track
+      setCurrentTrack(trackIndex);
     } catch (e) {
       console.error("Error setting up audio:", e);
       setError(`Error setting up audio: ${e.message}`);
       setLoading(false);
     }
+  };
+
+  // Initial track load
+  useEffect(() => {
+    loadTrack(currentTrack);
     
     // Clean up function
     return () => {
@@ -141,6 +161,11 @@ const MusicPage = () => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+  
+  // Change track handler
+  const changeTrack = (index) => {
+    loadTrack(index);
   };
   
   return (
@@ -232,6 +257,35 @@ const MusicPage = () => {
               </div>
             </div>
           </div>
+          
+          {/* Playlist */}
+          <div className="playlist mt-4">
+            <h3 className="text-accent mb-3">Playlist</h3>
+            <div className="list-group">
+              {tracks.map((track, index) => (
+                <button
+                  key={index}
+                  className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${currentTrack === index ? 'active' : ''}`}
+                  onClick={() => changeTrack(index)}
+                  disabled={loading && currentTrack === index}
+                >
+                  <div>
+                    <h5 className="mb-1">{track.title}</h5>
+                    <p className="mb-1">{track.artist}</p>
+                  </div>
+                  {currentTrack === index && isPlaying && (
+                    <span className="badge bg-primary rounded-pill">
+                      <div className="playing-icon">
+                        <div className="playing-bar"></div>
+                        <div className="playing-bar"></div>
+                        <div className="playing-bar"></div>
+                      </div>
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       
@@ -261,6 +315,23 @@ const MusicPage = () => {
           0% { height: 5px; }
           100% { height: 40px; }
         }
+        
+        .playing-icon {
+          display: flex;
+          align-items: flex-end;
+          height: 16px;
+        }
+        
+        .playing-bar {
+          width: 3px;
+          margin: 0 1px;
+          background-color: white;
+          animation: sound 0ms -800ms linear infinite alternate;
+        }
+        
+        .playing-bar:nth-child(1) { height: 8px; animation-duration: 474ms; }
+        .playing-bar:nth-child(2) { height: 16px; animation-duration: 433ms; }
+        .playing-bar:nth-child(3) { height: 10px; animation-duration: 407ms; }
         `}
       </style>
     </div>

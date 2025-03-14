@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const AUDIO_FILE_PATH = './src/music/bang-crash-103775.mp3'; // Change to your audio file path
-const OUTPUT_DIR = './src/music/chunks';
+const AUDIO_FILE_PATH = './src/music/forever-live-sessions-vol-2-hq.mp3'; // Change to your audio file path
+const OUTPUT_DIR = './src/music/chunks-2';
 const CHUNK_SIZE = 50000; // Adjust based on your needs
 const INDEX_FILE_PATH = './src/music/audioBase64.js';
 
