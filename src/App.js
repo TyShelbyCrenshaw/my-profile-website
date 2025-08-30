@@ -10,7 +10,7 @@ import SchoolProjects from './SchoolProjects';
 import Testimonials from './Testimonials';
 import Contact from './Contact';
 import AnimatedBackground from './components/AnimatedBackground.js';
-import MusicPage from './MusicPage'; 
+import UltimatePixelGame from './game/UltimatePixelGame'; 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import './index.css';
@@ -34,7 +34,7 @@ const DefaultContainer = () => (
         <Route exact path="/Contact" element={<Contact />} />
         <Route exact path="/WorkProjects" element={<WorkProjects />} />
         <Route exact path="/SchoolProjects" element={<SchoolProjects />} />
-        <Route exact path="/Music" element={<MusicPage />} />
+        <Route exact path="/UltimatePixelGame" element={<UltimatePixelGame />} />
       </Routes>
   </div>
 );

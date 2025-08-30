@@ -124,3 +124,25 @@ code {
   background-size: 200% 200%;
   animation: gradientBg 15s ease infinite;
 }
+
+@media (max-width: 768px) {
+  .container, .landing-section {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: center;
+  }
+
+  .card {
+    max-width: 100%;
+  }
+
+  h1, h2, h3, h4 {
+    font-size: clamp(1.2rem, 5vw, 2.5rem);
+    line-height: 1.2;
+  }
+  
+}

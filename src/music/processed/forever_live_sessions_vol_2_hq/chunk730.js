@@ -1,4 +1,0 @@
-/* eslint-disable */
-export const compressionType = "deflate";
-export default "eJzt0TFKAwEURdElxc76CzGIJOAwG0glqE0KdfsyO7BIuCnOLV794FwuN+pn9/h1WJaP3cwcPmdmXmbmtM28zcx5m3mfmYdtnl5vdeS+W/fPp2U9fh/X+a2/XDX+/4o/f/78+deHm/jz58+ff324iT9//vz514eb+PPnz59/fbiJP3/+/PnXh5v48+fPn399uIk/f/78+deHm/jz58+ff324iT9//vz514eb+PPnz59/fbiJP3/+/PnXh5v48+fPn399uIk/f/78+deHm/jz58+ff324iT9//vz514eb+PPnz59/fbiJP3/+/PnXh5v48+fPn399uIk/f/78+deHm/jz58+ff324iT9//vz514eb+PPnz59/fbiJP3/+/PnXh5v48+fPn399uIk/f/78+deHm/jz58+ff324iT9//vz514eb+PPnz59/fbiJP3/+/PnXh5v48+fPn399uIk/f/78+deHm/jz58+ff334Ov0BHMi1DQ==";
-/* eslint-enable */

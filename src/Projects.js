@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import WorkProjects from './WorkProjects';
 import SchoolProjects from './SchoolProjects';
 import ForFunProjects from './ForFunProjects';
+import { useNavigate } from 'react-router-dom';
 
 const Projects = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('work');
 
   return (
@@ -25,10 +27,16 @@ const Projects = () => {
           School Projects
         </button>
         <button 
-          className={`btn ${activeTab === 'forFun' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ${activeTab === 'forFun' ? 'btn-primary' : 'btn-secondary'} me-2`}
           onClick={() => setActiveTab('forFun')}
         >
           For Fun
+        </button>
+        <button 
+          className={`btn btn-secondary`}
+          onClick={() => navigate('/UltimatePixelGame')}
+        >
+          Ultimate Pixel Game
         </button>
       </div>
 
