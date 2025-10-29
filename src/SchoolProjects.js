@@ -1,11 +1,9 @@
-import React from 'react';
 import picture from './pictures/porfolio_photos/background2.jpg';
-import mainBOS from './pictures/porfolio_photos/BOSContactSheet.jpg';
 
 const SchoolProjects = () => {
   // Creating an array of image URLs
   const images = require.context('./pictures/class_photos', false, /\.(jpg|JPG|jpeg)$/);
-  const imageList = images.keys().map((image) => images(image));
+  const imageList = [...new Set(images.keys().map((image) => images(image)))];
 
   return (
     <div className="container mt-5" style={{ width: "100vw", minHeight: "100vh", overflow: "auto" }}>
@@ -54,28 +52,17 @@ const SchoolProjects = () => {
               borderRadius: "1rem",
               boxShadow: "0 0.5rem 1rem rgba(0, 0, 0, 0.15)"
             }}>
-              {/* Contact Sheet */}
-              <div className="row mb-4">
-                <div className="col-12">
-                  <img 
-                    className="img-fluid rounded shadow photo" 
-                    src={mainBOS} 
-                    alt="Contact Sheet"
-                    style={{ width: "100%" }}
-                  />
-                </div>
-              </div>
-
               {/* Photo Grid - Maintaining your existing grid structure */}
               <div className="row">
+
                 {/* First Column */}
                 <div className="col-md-4 d-flex flex-column">
-                  {imageList.slice(0, Math.ceil(imageList.length / 3)).map((image, index) => (
+                  {imageList.filter((_, index) => index % 3 === 0).map((image, index) => (
                     <div key={index} className="mb-4">
                       <img 
                         className="img-fluid rounded shadow photo" 
                         src={image} 
-                        alt={`Class photo ${index + 1}`}
+                        alt={`Class photo ${index * 3 + 1}`}
                       />
                     </div>
                   ))}
@@ -83,12 +70,12 @@ const SchoolProjects = () => {
 
                 {/* Second Column */}
                 <div className="col-md-4 d-flex flex-column">
-                  {imageList.slice(Math.ceil(imageList.length / 3), Math.ceil(2 * imageList.length / 3)).map((image, index) => (
+                  {imageList.filter((_, index) => index % 3 === 1).map((image, index) => (
                     <div key={index} className="mb-4">
                       <img 
                         className="img-fluid rounded shadow photo" 
                         src={image} 
-                        alt={`Class photo ${Math.ceil(imageList.length / 3) + index + 1}`}
+                        alt={`Class photo ${index * 3 + 2}`}
                       />
                     </div>
                   ))}
@@ -96,16 +83,17 @@ const SchoolProjects = () => {
 
                 {/* Third Column */}
                 <div className="col-md-4 d-flex flex-column">
-                  {imageList.slice(Math.ceil(2 * imageList.length / 3)).map((image, index) => (
+                  {imageList.filter((_, index) => index % 3 === 2).map((image, index) => (
                     <div key={index} className="mb-4">
                       <img 
                         className="img-fluid rounded shadow photo" 
                         src={image} 
-                        alt={`Class photo ${Math.ceil(2 * imageList.length / 3) + index + 1}`}
+                        alt={`Class photo ${index * 3 + 3}`}
                       />
                     </div>
                   ))}
                 </div>
+
               </div>
             </div>
           </div>
