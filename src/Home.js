@@ -49,7 +49,7 @@ const Home = () => {
                   <div className="mb-4">
                     <h4 className="text-accent mb-3">Professional Background</h4>
                     <p className="mb-4 text-secondary">
-                      As a software developer at LinkTrust, I specialize in building online marketing solutions using .NET Framework, React, and MSSQL database. With over four years of experience, I've developed robust solutions that help businesses optimize their marketing strategies.
+                      As a software developer at LinkTrust, I specialize in building online marketing solutions using .NET Framework, React, and MSSQL database. With over five years of experience, I've developed robust solutions that help businesses optimize their marketing strategies.
                     </p>
                   </div>
 
