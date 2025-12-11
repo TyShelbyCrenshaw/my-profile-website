@@ -1,8 +1,13 @@
+import React from 'react';
+
+// Images
 import picture from './pictures/porfolio_photos/LinkTrustExample.png';
 import picture2 from './pictures/porfolio_photos/LinkTrustExample2.png';
 import picture3 from './pictures/porfolio_photos/UserRoles.png';
 
-import React from 'react';
+// Videos
+// Note: Browsers struggle with .mkv. Highly recommend converting this to .mp4 for web use.
+import reportVideo from './pictures/videos/DynamicReportEngine.mp4'; 
 
 const WorkProjects = () => {
   return (
@@ -27,6 +32,35 @@ const WorkProjects = () => {
 
           {/* Project Cards */}
           <div className="project-cards">
+
+            {/* --- FEATURED VIDEO PROJECT --- */}
+            <div className="bg-tertiary p-4 rounded shadow-sm mb-5 border-start border-4 border-primary">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="text-accent mb-0">Dynamic Report Engine</h5>
+                <span className="badge bg-primary text-tertiary">Featured</span>
+              </div>
+              
+              <p className="mb-4">
+                Designed and implemented a dynamic engine capable of generating complex reports on the fly. 
+                This system improves data accessibility and reduces manual reporting overhead.
+              </p>
+              
+              <div className="ratio ratio-16x9 bg-black rounded shadow">
+                <video 
+                  controls 
+                  className="rounded"
+                  style={{ width: '100%', height: '100%' }}
+                >
+                  <source src={reportVideo} type="video/mp4" />
+                  {/* Fallback for MKV containers if browser supports it */}
+                  <source src={reportVideo} type="video/x-matroska" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+
+            {/* --- EXISTING STATIC PROJECTS --- */}
+
             {/* User Roles Project */}
             <div className="bg-tertiary p-4 rounded shadow-sm mb-5">
               <h5 className="text-accent mb-3">User Roles Management System</h5>
