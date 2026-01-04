@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <div className="container mt-5" style={{width: "100vw", minHeight: "100vh"}}>
       <div className="p-4 bg-tertiary shadow"> 
-        <div className="bg-secondary m-3 p-5 shadow rounded">
+        <div className="bg-secondary m-3 p-5 shadow">
           <div className="container"> 
             <div className="row align-items-center">
               {/* Image Column */}
